@@ -1,45 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="100dp"
-    android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <EditText
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:id="@+id/input"/>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="30dp"
-        android:text="버튼"
-        android:id="@+id/button"
-        android:layout_marginTop="100dp"/>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="30dp"
-        android:text="저장"
-        android:id="@+id/save"
-        android:layout_marginTop="10dp"/>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="30dp"
-        android:text="load"
-        android:id="@+id/load"
-        android:layout_marginTop="10dp"/>
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/mainMenuBar"
+        android:id="@+id/mainFragmentContainer"/>
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="150dp"
-        android:id="@+id/img"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:id="@+id/mainMenuBar"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/mainFragmentContainer"
+        android:background="@color/white"
+        android:baselineAligned="false">
 
-        />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/mainFragmentSearchContainer"
+            android:background="@drawable/main_menubar_false"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_weight="1"
+            tools:ignore="UselessParent">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="검색"
+                android:textSize="19sp"
+                android:fontFamily="@font/regular"
+                android:includeFontPadding="false"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/mainFragmentSaveContainer"
+            android:background="@drawable/main_menubar_false"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_weight="1"
+            tools:ignore="UselessParent">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="보관함"
+                android:textSize="19sp"
+                android:fontFamily="@font/regular"
+                android:includeFontPadding="false"/>
+        </LinearLayout>
 
-</LinearLayout>
+
+    </LinearLayout>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
