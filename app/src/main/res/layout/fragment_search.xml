@@ -47,21 +47,13 @@
 
     </LinearLayout>
 
-<!--    <TextView-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:textSize="30dp"-->
-<!--        android:text="저장"-->
-<!--        android:id="@+id/save"-->
-<!--        android:layout_marginTop="10dp"/>-->
-<!--    <TextView-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:textSize="30dp"-->
-<!--        android:text="load"-->
-<!--        android:id="@+id/load"-->
-<!--        android:layout_marginTop="10dp"/>-->
-
-
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/searchList"
+        app:layout_constraintTop_toBottomOf="@id/searchSearchContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="30dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

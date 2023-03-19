@@ -14,4 +14,12 @@ class Repository {
     suspend fun searchImg(key : String, query : String, sort : String) : Response<RetrofitSearchImg>{
         return iRetrofit.searchImg(key, query, sort)
     }
+
+    suspend fun searchVideo(key: String, query : String, sort : String) : Response<RetrofitSearchVideoDto>{
+        return iRetrofit.searchVideo(key, query, sort)
+    }
+
+    suspend fun getPref(key : String, default : String) : String{
+        return GlobalApplication.save.getPref(key, default)
+    }
 }

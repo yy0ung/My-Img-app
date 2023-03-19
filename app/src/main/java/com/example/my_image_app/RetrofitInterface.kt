@@ -12,4 +12,8 @@ interface RetrofitInterface {
     suspend fun searchImg(@Header("Authorization")key : String, @Query("query") query : String, @Query("sort") sort : String)
         : Response<RetrofitSearchImg>
 
+    @GET("/v2/search/vclip")
+    suspend fun searchVideo(@Header("Authorization")key : String, @Query("query") query : String, @Query("sort") sort : String)
+            : Response<RetrofitSearchVideoDto>
+
 }

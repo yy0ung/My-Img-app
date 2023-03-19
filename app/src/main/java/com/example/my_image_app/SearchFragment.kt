@@ -1,6 +1,7 @@
 package com.example.my_image_app
 
 import android.content.ContentValues
+import android.content.ContentValues.TAG
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
@@ -11,6 +12,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
 import com.example.my_image_app.databinding.FragmentSearchBinding
 import kotlinx.coroutines.CoroutineScope
@@ -22,6 +24,7 @@ class SearchFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var viewModel : MainViewModel
     private lateinit var viewModelFactory : MainViewModelFactory
+    private lateinit var searchRstList : ArrayList<Any>
     private val key = "KakaoAK 771b6707ddc9077bf7ad7c7ae0a92272"
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,6 +36,8 @@ class SearchFragment : Fragment() {
 
         viewModelFactory = MainViewModelFactory(Repository())
         viewModel = ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
+
+
 
 //        binding.save.setOnClickListener {
 //            val shared = requireActivity().getSharedPreferences("s1", AppCompatActivity.MODE_PRIVATE)
@@ -54,7 +59,10 @@ class SearchFragment : Fragment() {
 
         binding.searchBtn.setOnClickListener {
             Toast.makeText(context, "aaa", Toast.LENGTH_SHORT).show()
-            CoroutineScope(Dispatchers.Main).launch { search(binding.searchInput.text.toString()) }
+            CoroutineScope(Dispatchers.Main).launch {
+                searchImg(binding.searchInput.text.toString())
+                searchVideo(binding.searchInput.text.toString())
+            }
             Log.d(ContentValues.TAG, "onCreate: dfdfdfdfdfdf")
         }
 
@@ -67,12 +75,25 @@ class SearchFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-    private suspend fun search(word : String){
+    private suspend fun searchImg(word : String){
         CoroutineScope(Dispatchers.Main).launch {
             viewModel.searchImg(key, word, "recency")
             viewModel.repositories1.observe(viewLifecycleOwner){
-                Log.d(ContentValues.TAG, "onCreate: ${it}")
+                val adapter = SearchItemAdapter(it)
+                binding.searchList.layoutManager = GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false)
+                binding.searchList.adapter = adapter
+            }
+        }
+    }
 
+    private suspend fun searchVideo(word: String){
+        CoroutineScope(Dispatchers.Main).launch {
+            viewModel.searchVideo(key, word, "recency")
+            viewModel.repositories2.observe(viewLifecycleOwner){
+                Log.d(TAG, "searchVideo: $it")
+//                val adapter = SearchItemAdapter(it)
+//                binding.searchList.layoutManager = GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false)
+//                binding.searchList.adapter = adapter
             }
         }
     }

@@ -11,6 +11,12 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
     private val _repositoriesSearchImg = MutableLiveData<RetrofitSearchImg>()
     val repositories1 : MutableLiveData<RetrofitSearchImg>
         get() = _repositoriesSearchImg
+    private val _repositoriesSearchVideo = MutableLiveData<RetrofitSearchVideoDto>()
+    val repositories2 : MutableLiveData<RetrofitSearchVideoDto>
+        get() = _repositoriesSearchVideo
+    private val _repositoriesGetPref = MutableLiveData<String>()
+    val repositories3 : MutableLiveData<String>
+        get() = _repositoriesGetPref
 
     init {
         Log.d(TAG, "start: ")
@@ -24,6 +30,26 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
                 }else{
                     Log.d(TAG, "searchImg: $response")
                 }
+            }
+        }
+    }
+
+    suspend fun searchVideo(key : String, query : String, sort : String){
+        viewModelScope.launch {
+            repository.searchVideo(key, query, sort).let { response ->
+                if(response.isSuccessful){
+                    _repositoriesSearchVideo.postValue(response.body())
+                }else{
+                    Log.d(TAG, "searchVideo: $response")
+                }
+            }
+        }
+    }
+
+    suspend fun getPref(key : String, default : String){
+        viewModelScope.launch {
+            repository.getPref(key, default).let { response->
+                _repositoriesGetPref.postValue(response.toString())
             }
         }
     }
