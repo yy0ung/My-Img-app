@@ -28,13 +28,14 @@ class SearchItemAdapter(private val searchItemList : RetrofitSearchImg)
         holder.itemTime.text = searchItemList.documents[position].datetime
 
         // 저장된 사진 표시
-        if(GlobalApplication.save.getPref("key", "no")==searchItemList.documents[position].thumbnail){
-            holder.itemCheck.setBackgroundResource(R.drawable.ic_launcher_background)
-        }
-
+//        if(GlobalApplication.save.getPref("key", "no")==searchItemList.documents[position].thumbnail){
+//            holder.itemCheck.setBackgroundResource(R.drawable.ic_launcher_background)
+//        }
+//
         // 누르면 보관함에 보관
         holder.itemContainer.setOnClickListener {
-            GlobalApplication.save.setPref("key", searchItemList.documents[position].thumbnail)
+            val doc = SaveListDto(searchItemList.documents[position].thumbnail, searchItemList.documents[position].datetime)
+            GlobalApplication.save.setPref("key", doc)
         }
 
     }

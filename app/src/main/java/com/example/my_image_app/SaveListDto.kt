@@ -1,6 +1,6 @@
 package com.example.my_image_app
 
-data class SearchRstDto(
+data class SaveListDto(
     val thumbnail : String,
     val datetime : String
 )

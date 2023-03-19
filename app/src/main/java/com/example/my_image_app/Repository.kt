@@ -19,7 +19,7 @@ class Repository {
         return iRetrofit.searchVideo(key, query, sort)
     }
 
-    suspend fun getPref(key : String, default : String) : String{
+    suspend fun getPref(key : String, default : String) : ArrayList<SaveListDto>{
         return GlobalApplication.save.getPref(key, default)
     }
 }
