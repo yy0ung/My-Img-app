@@ -14,8 +14,8 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
     private val _repositoriesSearchVideo = MutableLiveData<RetrofitSearchVideoDto>()
     val repositories2 : MutableLiveData<RetrofitSearchVideoDto>
         get() = _repositoriesSearchVideo
-    private val _repositoriesGetPref = MutableLiveData<String>()
-    val repositories3 : MutableLiveData<String>
+    private val _repositoriesGetPref = MutableLiveData<ArrayList<SaveListDto>>()
+    val repositories3 : MutableLiveData<ArrayList<SaveListDto>>
         get() = _repositoriesGetPref
 
     init {
@@ -49,7 +49,7 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
     suspend fun getPref(key : String, default : String){
         viewModelScope.launch {
             repository.getPref(key, default).let { response->
-                _repositoriesGetPref.postValue(response.toString())
+                _repositoriesGetPref.postValue(response)
             }
         }
     }

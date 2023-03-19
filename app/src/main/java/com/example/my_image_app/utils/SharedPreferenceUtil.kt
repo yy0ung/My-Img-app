@@ -5,9 +5,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.example.my_image_app.SaveListDto
 import com.google.gson.GsonBuilder
-import com.google.gson.JsonArray
-import com.google.gson.reflect.TypeToken
-import org.json.JSONArray
+
 
 class SharedPreferenceUtil(context: Context) {
     private val save : SharedPreferences = context.getSharedPreferences("save", Context.MODE_PRIVATE)

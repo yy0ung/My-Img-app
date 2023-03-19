@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
 import com.example.my_image_app.databinding.FragmentSaveBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -34,7 +35,9 @@ class SaveFragment : Fragment() {
         CoroutineScope(Dispatchers.Main).launch {
             viewModel.getPref("key", "no")
             viewModel.repositories3.observe(viewLifecycleOwner){
-                Log.d(TAG, "onCreateView: $it")
+                val adapter = SaveItemAdapter(it)
+                binding.saveList.layoutManager = GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false)
+                binding.saveList.adapter = adapter
             }
         }
 
