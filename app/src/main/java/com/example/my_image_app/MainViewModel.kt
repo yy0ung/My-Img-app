@@ -6,14 +6,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import java.util.*
+import kotlin.collections.ArrayList
 
 class MainViewModel(private val repository: Repository) : ViewModel() {
-    private val _repositoriesSearchImg = MutableLiveData<RetrofitSearchImg>()
-    val repositories1 : MutableLiveData<RetrofitSearchImg>
-        get() = _repositoriesSearchImg
-    private val _repositoriesSearchVideo = MutableLiveData<RetrofitSearchVideoDto>()
-    val repositories2 : MutableLiveData<RetrofitSearchVideoDto>
-        get() = _repositoriesSearchVideo
+    private val _repositoriesSearchRst = MutableLiveData<ArrayList<SaveListDto>>()
+    val repositories1 : MutableLiveData<ArrayList<SaveListDto>>
+        get() = _repositoriesSearchRst
     private val _repositoriesGetPref = MutableLiveData<ArrayList<SaveListDto>>()
     val repositories3 : MutableLiveData<ArrayList<SaveListDto>>
         get() = _repositoriesGetPref
@@ -21,30 +20,31 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
     init {
         Log.d(TAG, "start: ")
     }
+    
+    private val imgAndVideo = ArrayList<SaveListDto>()
 
-    suspend fun searchImg(key : String, query : String, sort : String){
+    suspend fun searchRst(key : String, query : String, sort : String){
         viewModelScope.launch {
             repository.searchImg(key, query, sort).let { response ->
-                if(response.isSuccessful){
-                    _repositoriesSearchImg.postValue(response.body())
-                }else{
-                    Log.d(TAG, "searchImg: $response")
+                if (response.isSuccessful && response.body()!=null) {
+                    for (i in 0 until response.body()!!.documents.size){
+                        imgAndVideo.add(SaveListDto(response.body()!!.documents[i].thumbnail, response.body()!!.documents[i].datetime))
+                    }
                 }
             }
+            repository.searchVideo(key, query, sort).let { response ->
+                if (response.isSuccessful) {
+                    for (i in 0 until response.body()!!.documents.size){
+                        imgAndVideo.add(SaveListDto(response.body()!!.documents[i].thumbnail, response.body()!!.documents[i].datetime))
+                    }
+                }
+            }
+            imgAndVideo.sortWith(compareByDescending{ it.datetime })
+            _repositoriesSearchRst.postValue(imgAndVideo)
+
         }
     }
 
-    suspend fun searchVideo(key : String, query : String, sort : String){
-        viewModelScope.launch {
-            repository.searchVideo(key, query, sort).let { response ->
-                if(response.isSuccessful){
-                    _repositoriesSearchVideo.postValue(response.body())
-                }else{
-                    Log.d(TAG, "searchVideo: $response")
-                }
-            }
-        }
-    }
 
     suspend fun getPref(key : String, default : String){
         viewModelScope.launch {
