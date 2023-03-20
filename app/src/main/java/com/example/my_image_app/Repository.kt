@@ -2,7 +2,6 @@ package com.example.my_image_app
 
 import com.example.my_image_app.utils.API
 import retrofit2.Response
-import retrofit2.create
 
 class Repository {
     companion object{
@@ -19,7 +18,7 @@ class Repository {
         return iRetrofit.searchVideo(key, query, sort)
     }
 
-    suspend fun getPref(key : String, default : String) : ArrayList<SaveListDto>{
+    suspend fun getPref(key : String, default : String) : ArrayList<SaveItemDto>{
         return GlobalApplication.save.getPref(key, default)
     }
 }

@@ -37,8 +37,9 @@ class SearchFragment : Fragment() {
         viewModelFactory = MainViewModelFactory(Repository())
         viewModel = ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
 
+        binding.searchBtn.setColorFilter(android.graphics.Color.parseColor("#F7E34B"))
+
         binding.searchBtn.setOnClickListener {
-            Toast.makeText(context, "aaa", Toast.LENGTH_SHORT).show()
             CoroutineScope(Dispatchers.Main).launch {
                 searchRst(binding.searchInput.text.toString())
             }
@@ -57,7 +58,7 @@ class SearchFragment : Fragment() {
         CoroutineScope(Dispatchers.Main).launch {
             viewModel.searchRst(key, word, "recency")
             viewModel.repositories1.observe(viewLifecycleOwner){
-                val adapter = SearchItemAdapter(it)
+                val adapter = SearchItemAdapter(it, requireContext())
                 binding.searchList.layoutManager = GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false)
                 binding.searchList.adapter = adapter
             }

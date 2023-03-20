@@ -33,7 +33,7 @@ class SaveFragment : Fragment() {
         viewModel = ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
 
         CoroutineScope(Dispatchers.Main).launch {
-            viewModel.getPref("key", "no")
+            viewModel.getPref("key", "null")
             viewModel.repositories3.observe(viewLifecycleOwner){
                 val adapter = SaveItemAdapter(it)
                 binding.saveList.layoutManager = GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false)
@@ -41,13 +41,6 @@ class SaveFragment : Fragment() {
             }
         }
 
-//        val shared = requireActivity().getSharedPreferences("s1", activity.MODE_PRIVATE)
-//            val url = shared.getString("a", "null")
-//            if(url=="null"){
-//                Toast.makeText(context, "null", Toast.LENGTH_SHORT).show()
-//            }else{
-//                Glide.with(requireActivity()).load(url).into(binding.img)
-//            }
         return view
     }
 }

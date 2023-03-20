@@ -1,41 +1,53 @@
 package com.example.my_image_app
 
+import android.annotation.SuppressLint
 import android.content.ContentValues.TAG
-import android.media.Image
+import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.compose.ui.graphics.Color
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.Target.SIZE_ORIGINAL
 
-class SearchItemAdapter(private val searchItemList : ArrayList<SaveListDto>)
+class SearchItemAdapter(private val searchItemList : ArrayList<RstListDto>, context: Context)
     : RecyclerView.Adapter<SearchItemAdapter.CustomViewHolder>(){
+    private val context = context
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_search, parent, false)
         return  CustomViewHolder(view)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
         Glide.with(holder.itemContainer)
             .load(searchItemList[position].thumbnail).into(holder.itemImg)
-        holder.itemTime.text = searchItemList[position].datetime
+        val bool = GlobalApplication.save.checkPref("key", searchItemList[position].thumbnail)
 
-        // 저장된 사진 표시
-//        if(GlobalApplication.save.getPref("key", "no")==searchItemList.documents[position].thumbnail){
-//            holder.itemCheck.setBackgroundResource(R.drawable.ic_launcher_background)
-//        }
-//
+        if(bool){
+            holder.itemCheck.setBackgroundResource(R.drawable.full_like)
+        }
+
+        val datetime = searchItemList[position].datetime
+        holder.itemTime.text =
+            datetime.substring(0,10)+"\n"+datetime.substring(11,13)+"시 "+datetime.substring(14,16)+"분"
+
         // 누르면 보관함에 보관
         holder.itemContainer.setOnClickListener {
-            val doc = SaveListDto(searchItemList[position].thumbnail, searchItemList[position].datetime)
-            GlobalApplication.save.setPref("key", doc)
+            if(bool){
+                GlobalApplication.save.removePref("key", searchItemList[position].thumbnail)
+                Toast.makeText(context, "보관함에서 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                holder.itemCheck.setBackgroundResource(R.drawable.empty_like)
+            }else{
+                GlobalApplication.save.setPref("key", searchItemList[position].thumbnail)
+                Toast.makeText(context, "보관함에 추가되었습니다.", Toast.LENGTH_SHORT).show()
+                holder.itemCheck.setBackgroundResource(R.drawable.full_like)
+            }
         }
 
     }
