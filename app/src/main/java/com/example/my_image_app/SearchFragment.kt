@@ -37,33 +37,11 @@ class SearchFragment : Fragment() {
         viewModelFactory = MainViewModelFactory(Repository())
         viewModel = ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
 
-
-
-//        binding.save.setOnClickListener {
-//            val shared = requireActivity().getSharedPreferences("s1", AppCompatActivity.MODE_PRIVATE)
-//            val editor  : SharedPreferences.Editor = shared.edit()
-//            editor.putString("a", "https://search4.kakaocdn.net/argon/130x130_85_c/BcYqEVBCPq2")
-//            editor.apply()
-//        }
-//
-//        binding.load.setOnClickListener {
-//            val shared = requireActivity().getSharedPreferences("s1", AppCompatActivity.MODE_PRIVATE)
-//            val url = shared.getString("a", "null")
-//            if(url=="null"){
-//                Toast.makeText(context, "null", Toast.LENGTH_SHORT).show()
-//            }else{
-//                Glide.with(requireActivity()).load(url).into(binding.img)
-//            }
-//        }
-
-
         binding.searchBtn.setOnClickListener {
             Toast.makeText(context, "aaa", Toast.LENGTH_SHORT).show()
             CoroutineScope(Dispatchers.Main).launch {
-                searchImg(binding.searchInput.text.toString())
-                searchVideo(binding.searchInput.text.toString())
+                searchRst(binding.searchInput.text.toString())
             }
-            Log.d(ContentValues.TAG, "onCreate: dfdfdfdfdfdf")
         }
 
 
@@ -75,25 +53,13 @@ class SearchFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-    private suspend fun searchImg(word : String){
+    private suspend fun searchRst(word : String){
         CoroutineScope(Dispatchers.Main).launch {
-            viewModel.searchImg(key, word, "recency")
+            viewModel.searchRst(key, word, "recency")
             viewModel.repositories1.observe(viewLifecycleOwner){
                 val adapter = SearchItemAdapter(it)
                 binding.searchList.layoutManager = GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false)
                 binding.searchList.adapter = adapter
-            }
-        }
-    }
-
-    private suspend fun searchVideo(word: String){
-        CoroutineScope(Dispatchers.Main).launch {
-            viewModel.searchVideo(key, word, "recency")
-            viewModel.repositories2.observe(viewLifecycleOwner){
-                Log.d(TAG, "searchVideo: $it")
-//                val adapter = SearchItemAdapter(it)
-//                binding.searchList.layoutManager = GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false)
-//                binding.searchList.adapter = adapter
             }
         }
     }

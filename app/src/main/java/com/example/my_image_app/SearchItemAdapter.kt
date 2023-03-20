@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.Target.SIZE_ORIGINAL
 
-class SearchItemAdapter(private val searchItemList : RetrofitSearchImg)
+class SearchItemAdapter(private val searchItemList : ArrayList<SaveListDto>)
     : RecyclerView.Adapter<SearchItemAdapter.CustomViewHolder>(){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
@@ -24,8 +24,8 @@ class SearchItemAdapter(private val searchItemList : RetrofitSearchImg)
 
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
         Glide.with(holder.itemContainer)
-            .load(searchItemList.documents[position].thumbnail).into(holder.itemImg)
-        holder.itemTime.text = searchItemList.documents[position].datetime
+            .load(searchItemList[position].thumbnail).into(holder.itemImg)
+        holder.itemTime.text = searchItemList[position].datetime
 
         // 저장된 사진 표시
 //        if(GlobalApplication.save.getPref("key", "no")==searchItemList.documents[position].thumbnail){
@@ -34,14 +34,14 @@ class SearchItemAdapter(private val searchItemList : RetrofitSearchImg)
 //
         // 누르면 보관함에 보관
         holder.itemContainer.setOnClickListener {
-            val doc = SaveListDto(searchItemList.documents[position].thumbnail, searchItemList.documents[position].datetime)
+            val doc = SaveListDto(searchItemList[position].thumbnail, searchItemList[position].datetime)
             GlobalApplication.save.setPref("key", doc)
         }
 
     }
 
     override fun getItemCount(): Int {
-        return searchItemList.documents.size
+        return searchItemList.size
     }
     inner class CustomViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView){
         val itemContainer : ConstraintLayout = itemView.findViewById(R.id.itemSearchContainer)

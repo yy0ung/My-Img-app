@@ -17,7 +17,6 @@ class SharedPreferenceUtil(context: Context) {
         if(temp!="no"){
             rst = gson.fromJson(temp, Array<SaveListDto>::class.java).toList() as ArrayList<SaveListDto>
         }
-
         return rst
     }
 
