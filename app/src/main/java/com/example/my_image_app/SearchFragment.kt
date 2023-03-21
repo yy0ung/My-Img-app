@@ -74,7 +74,7 @@ class SearchFragment : Fragment() {
     }
     private suspend fun searchRst(word : String){
         CoroutineScope(Dispatchers.Main).launch {
-            viewModel.searchRst(key, word, "recency",1)
+            viewModel.searchRst(key, word, "recency",1,4)
             viewModel.repositories1.observe(viewLifecycleOwner){
                 data.addAll(it)
                 recyclerView = binding.searchList
@@ -98,7 +98,7 @@ class SearchFragment : Fragment() {
                         }
                     }
                 })
-                //loadData()
+                loadData()
             }
         }
     }
@@ -112,13 +112,14 @@ class SearchFragment : Fragment() {
             adapter.notifyDataSetChanged()
             isLastPage = true
             Log.d(TAG, "loadMoreItems: done")
+
 //            CoroutineScope(Dispatchers.Main).launch {
-//                viewModel.searchRst(key, "기현", "recency",3)
+//                viewModel.searchRst(key, "기현", "recency",3, 4)
 //                viewModel.repositories1.observe(viewLifecycleOwner){
 //                    data.addAll(it)
 //                    adapter.notifyDataSetChanged()
 //                    isLastPage = true
-//                    Log.d(TAG, "loadMoreItems: done")
+//                    Log.d(TAG, "loadMoreItems: ${data.size}")
 //                }
 //            }
         },1000)
