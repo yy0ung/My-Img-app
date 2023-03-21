@@ -30,7 +30,6 @@ class SearchFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var viewModel : MainViewModel
     private lateinit var viewModelFactory : MainViewModelFactory
-    private val handler = Handler()
     private var searchRstList = ArrayList<RstListDto>()
 
     private lateinit var recyclerView: RecyclerView
@@ -75,7 +74,7 @@ class SearchFragment : Fragment() {
     }
     private suspend fun searchRst(word : String){
         CoroutineScope(Dispatchers.Main).launch {
-            viewModel.searchRst(key, word, "recency")
+            viewModel.searchRst(key, word, "recency",1)
             viewModel.repositories1.observe(viewLifecycleOwner){
                 data.addAll(it)
                 recyclerView = binding.searchList
@@ -94,12 +93,12 @@ class SearchFragment : Fragment() {
 
                         if (!isLoading && !isLastPage) {
                             if (visibleItemCount + firstVisibleItemPosition >= totalItemCount && firstVisibleItemPosition >= 0) {
-                                loadMoreItems()
+                                loadData()
                             }
                         }
                     }
                 })
-                loadData()
+                //loadData()
             }
         }
     }
@@ -109,9 +108,19 @@ class SearchFragment : Fragment() {
         val handler = Handler(Looper.getMainLooper())
         handler.postDelayed({
             val newData = RstListDto("aaa", "aaa")
-
             data.addAll(listOf(newData))
             adapter.notifyDataSetChanged()
+            isLastPage = true
+            Log.d(TAG, "loadMoreItems: done")
+//            CoroutineScope(Dispatchers.Main).launch {
+//                viewModel.searchRst(key, "기현", "recency",3)
+//                viewModel.repositories1.observe(viewLifecycleOwner){
+//                    data.addAll(it)
+//                    adapter.notifyDataSetChanged()
+//                    isLastPage = true
+//                    Log.d(TAG, "loadMoreItems: done")
+//                }
+//            }
         },1000)
         // Do the data loading logic here
         // ...

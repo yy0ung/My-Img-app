@@ -10,12 +10,12 @@ class Repository {
 
     private val iRetrofit : RetrofitInterface = RetrofitClient.getClient(API.BASE_URL)!!.create(RetrofitInterface::class.java)
 
-    suspend fun searchImg(key : String, query : String, sort : String) : Response<RetrofitSearchImg>{
-        return iRetrofit.searchImg(key, query, sort)
+    suspend fun searchImg(key : String, query : String, sort : String, page : Int) : Response<RetrofitSearchImg>{
+        return iRetrofit.searchImg(key, query, sort, page)
     }
 
-    suspend fun searchVideo(key: String, query : String, sort : String) : Response<RetrofitSearchVideoDto>{
-        return iRetrofit.searchVideo(key, query, sort)
+    suspend fun searchVideo(key: String, query : String, sort : String, page : Int) : Response<RetrofitSearchVideoDto>{
+        return iRetrofit.searchVideo(key, query, sort, page)
     }
 
     suspend fun getPref(key : String, default : String) : ArrayList<SaveItemDto>{

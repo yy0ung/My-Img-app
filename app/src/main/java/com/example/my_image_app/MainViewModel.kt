@@ -22,16 +22,16 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
     
     private val imgAndVideo = ArrayList<RstListDto>()
 
-    suspend fun searchRst(key : String, query : String, sort : String){
+    suspend fun searchRst(key : String, query : String, sort : String, page : Int){
         viewModelScope.launch {
-            repository.searchImg(key, query, sort).let { response ->
+            repository.searchImg(key, query, sort, page).let { response ->
                 if (response.isSuccessful && response.body()!=null) {
                     for (i in 0 until response.body()!!.documents.size){
                         imgAndVideo.add(RstListDto(response.body()!!.documents[i].thumbnail, response.body()!!.documents[i].datetime))
                     }
                 }
             }
-            repository.searchVideo(key, query, sort).let { response ->
+            repository.searchVideo(key, query, sort, page).let { response ->
                 if (response.isSuccessful) {
                     for (i in 0 until response.body()!!.documents.size){
                         imgAndVideo.add(RstListDto(response.body()!!.documents[i].thumbnail, response.body()!!.documents[i].datetime))
