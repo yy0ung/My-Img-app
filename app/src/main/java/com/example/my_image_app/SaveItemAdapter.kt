@@ -7,6 +7,7 @@ import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.my_image_app.utils.GlideApp
 
 class SaveItemAdapter(private val saveItemList : ArrayList<SaveItemDto>)
     : RecyclerView.Adapter<SaveItemAdapter.CustomViewHolder>(){
@@ -17,7 +18,7 @@ class SaveItemAdapter(private val saveItemList : ArrayList<SaveItemDto>)
     }
 
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
-        Glide.with(holder.itemContainer)
+        GlideApp.with(holder.itemContainer)
             .load(saveItemList[position].thumbnail).into(holder.itemImg)
 
     }
