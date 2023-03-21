@@ -17,6 +17,14 @@ import com.bumptech.glide.Glide
 class SearchItemAdapter(private val searchItemList : ArrayList<RstListDto>, context: Context)
     : RecyclerView.Adapter<SearchItemAdapter.CustomViewHolder>(){
     private val context = context
+    companion object{
+        const val loading = 1
+        const val item = 0
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return if(searchItemList[position].thumbnail=="null"){ loading }else{ item }
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_search, parent, false)
@@ -25,6 +33,7 @@ class SearchItemAdapter(private val searchItemList : ArrayList<RstListDto>, cont
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
+
         Glide.with(holder.itemContainer)
             .load(searchItemList[position].thumbnail).into(holder.itemImg)
         val bool = GlobalApplication.save.checkPref("key", searchItemList[position].thumbnail)
