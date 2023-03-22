@@ -1,6 +1,7 @@
 package com.example.my_image_app
 
 import com.example.my_image_app.utils.API
+import retrofit2.Call
 import retrofit2.Response
 
 class Repository {
@@ -20,5 +21,9 @@ class Repository {
 
     suspend fun getPref(key : String, default : String) : ArrayList<SaveItemDto>{
         return GlobalApplication.save.getPref(key, default)
+    }
+
+    fun test(key : String, query : String, sort : String, page : Int, size : Int) : Call<RetrofitSearchImg>{
+        return iRetrofit.test(key, query, sort, page, size)
     }
 }

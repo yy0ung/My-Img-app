@@ -24,6 +24,10 @@ import com.example.my_image_app.databinding.FragmentSearchBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
 
 class SearchFragment : Fragment() {
     private var _binding : FragmentSearchBinding? = null
@@ -54,13 +58,13 @@ class SearchFragment : Fragment() {
         viewModel = ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
 
         binding.searchBtn.setColorFilter(android.graphics.Color.parseColor("#F7E34B"))
-
+        recyclerView = binding.searchList
         CoroutineScope(Dispatchers.Main).launch {
-            searchRst("기현")
+            searchRst("연세")
         }
 
         binding.searchBtn.setOnClickListener {
-            Log.d(TAG, "onCreateView: ${searchRstList.get(searchRstList.size-2)}")
+            Log.d(TAG, "onCreateView: ${data.get(data.size-1).thumbnail}")
         }
 
 
@@ -77,82 +81,101 @@ class SearchFragment : Fragment() {
             viewModel.searchRst(key, word, "recency",1,4)
             viewModel.repositories1.observe(viewLifecycleOwner){
                 data.addAll(it)
-                recyclerView = binding.searchList
                 recyclerView.layoutManager = GridLayoutManager(activity, 2, GridLayoutManager.VERTICAL, false)
                 adapter = MyAdapter(requireActivity(), data)
                 recyclerView.adapter = adapter
 
-                recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                        super.onScrolled(recyclerView, dx, dy)
-
-                        val layoutManager = recyclerView.layoutManager as GridLayoutManager
-                        val visibleItemCount = layoutManager.childCount
-                        val totalItemCount = layoutManager.itemCount
-                        val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
-
-                        if (!isLoading && !isLastPage) {
-                            if (visibleItemCount + firstVisibleItemPosition >= totalItemCount && firstVisibleItemPosition >= 0) {
-                                loadData()
-                            }
-                        }
-                    }
-                })
-                loadData()
             }
         }
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            @SuppressLint("NotifyDataSetChanged")
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val layoutManager = recyclerView.layoutManager as GridLayoutManager
+                val visibleItemCount = layoutManager.childCount
+                val totalItemCount = layoutManager.itemCount
+                val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+
+                if (!isLoading && !isLastPage) {
+
+                    if (!recyclerView.canScrollVertically(1)) {
+                        loadData()
+                    }
+                }
+                //Log.d(TAG, "onScrolled: $visibleItemCount $totalItemCount $firstVisibleItemPosition")
+            }
+        })
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun loadData() {
         val handler = Handler(Looper.getMainLooper())
         handler.postDelayed({
-            val newData = RstListDto("aaa", "aaa")
-            data.addAll(listOf(newData))
-            adapter.notifyDataSetChanged()
-            isLastPage = true
-            Log.d(TAG, "loadMoreItems: done")
-
-//            CoroutineScope(Dispatchers.Main).launch {
-//                viewModel.searchRst(key, "기현", "recency",3, 4)
-//                viewModel.repositories1.observe(viewLifecycleOwner){
-//                    data.addAll(it)
-//                    adapter.notifyDataSetChanged()
-//                    isLastPage = true
-//                    Log.d(TAG, "loadMoreItems: ${data.size}")
-//                }
-//            }
-        },1000)
-        // Do the data loading logic here
-        // ...
-
-        // Update the data and notify the adapter
-
-    }
-
-    private fun loadMoreItems() {
-        val handler = Handler(Looper.getMainLooper())
-        handler.postDelayed({
+            val re = Repository()
             isLoading = true
+            re.test(key, "연세", "recency", 2,4)
+                .enqueue(
+                    object : Callback<RetrofitSearchImg>{
+                        override fun onFailure(call: Call<RetrofitSearchImg>, t: Throwable) {
+                            Log.d(TAG, "onFailure: 실패")
+                        }
 
-            // Do the data loading logic here for the next page
-            // ...
-
-            // Update the data and notify the adapter
-            val newData = RstListDto("aaa", "aaa")
-            data.addAll(listOf(newData))
-            adapter.notifyItemRangeInserted(data.size - 1, 1)
-
+                        override fun onResponse(
+                            call: Call<RetrofitSearchImg>,
+                            response: Response<RetrofitSearchImg>
+                        ) {
+                            val v = response.body()
+                            val arr = ArrayList<RstListDto>()
+                            for(i in 0 until v?.documents?.size!!){
+                                arr.add(RstListDto(v.documents[i].thumbnail, v.documents[i].datetime))
+                            }
+                            data.addAll(arr)
+                            adapter.notifyDataSetChanged()
+                            Log.d(TAG, "onResponse: ㅇㅇㅇㅇㅇ")
+                            Log.d(TAG, "onResponse: $arr")
+                        }
+                    }
+                )
+            isLastPage = true
             isLoading = false
+            Log.d(TAG, "loadMoreItems: done")
+//            isLoading = true
+//            val newData = RstListDto("https://search4.kakaocdn.net/argon/138x78_80_pr/AnbEJl5mTtg", "aaa")
+//            data.add(newData)
+//            adapter.notifyDataSetChanged()
+//            isLastPage = true
+//            isLoading = false
+//            Log.d(TAG, "loadMoreItems: done")
+        },2000)
 
-            if (true) {
-                isLastPage = true
-                Log.d(TAG, "loadMoreItems: done")
-            } else {
-                currentPage++
-            }
-        },1000)
+        }
+
 
     }
 
-}
+//    private fun loadMoreItems() {
+//        val handler = Handler(Looper.getMainLooper())
+//        handler.postDelayed({
+//            isLoading = true
+//
+//            // Do the data loading logic here for the next page
+//            // ...
+//
+//            // Update the data and notify the adapter
+//            val newData = RstListDto("aaa", "aaa")
+//            data.addAll(listOf(newData))
+//            adapter.notifyItemRangeInserted(data.size - 1, 1)
+//
+//            isLoading = false
+//
+//            if (true) {
+//                isLastPage = true
+//                Log.d(TAG, "loadMoreItems: done")
+//            } else {
+//                currentPage++
+//            }
+//        },1000)
+//
+//    }
+

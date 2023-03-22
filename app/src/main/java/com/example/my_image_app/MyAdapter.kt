@@ -1,11 +1,14 @@
 package com.example.my_image_app
 
+import android.content.ContentValues.TAG
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
@@ -25,6 +28,7 @@ class MyAdapter(private val context: Context, private val data: List<RstListDto>
         Glide.with(context)
             .load(item.thumbnail)
             .into(holder.imageView)
+        holder.imageView.setOnClickListener { Log.d(TAG, "onBindViewHolder: ${item.thumbnail}") }
     }
 
     override fun getItemCount(): Int = data.size

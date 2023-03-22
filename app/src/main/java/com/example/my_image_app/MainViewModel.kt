@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import javax.security.auth.callback.Callback
 import kotlin.collections.ArrayList
 
 class MainViewModel(private val repository: Repository) : ViewModel() {
@@ -21,6 +22,9 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
     }
     
     private val imgAndVideo = ArrayList<RstListDto>()
+    var page = 1
+    private val key = "KakaoAK 771b6707ddc9077bf7ad7c7ae0a92272"
+
 
     suspend fun searchRst(key : String, query : String, sort : String, page : Int, size : Int){
         viewModelScope.launch {
@@ -52,6 +56,18 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
             }
         }
     }
+
+    fun fetchNextPage() : ArrayList<RstListDto>{
+
+        viewModelScope.launch {
+            searchRst(key, "연세", "recency", 2, 4)
+
+        }
+        Log.d(TAG, "fetchNextPage: after ${imgAndVideo.size}")
+        return imgAndVideo
+    }
+
+
 
     /*
     class MyViewModel : ViewModel() {
