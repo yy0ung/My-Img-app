@@ -1,8 +1,13 @@
 package com.example.my_image_app
 
+import android.annotation.SuppressLint
+import android.content.ContentValues
+import android.content.ContentValues.TAG
+import android.util.Log
 import com.example.my_image_app.utils.API
 import retrofit2.Call
 import retrofit2.Response
+import java.util.Collections
 
 class Repository {
     companion object{
@@ -23,7 +28,36 @@ class Repository {
         return GlobalApplication.save.getPref(key, default)
     }
 
-    fun test(key : String, query : String, sort : String, page : Int, size : Int) : Call<RetrofitSearchImg>{
-        return iRetrofit.test(key, query, sort, page, size)
+    @SuppressLint("NotifyDataSetChanged")
+    suspend fun loadNextPage(key : String, query: String, sort: String, page: Int, size: Int, data : MutableList<RstListDto>, adapter : MyAdapter){
+        // 성공 못했을때 분기처리
+        val resImg = searchImg(key, query, sort, page, size).body()?.documents!!
+        val resVideo = searchVideo(key, query, sort, page).body()?.documents!!
+
+        val isImgEnd = searchImg(key, query, sort, page, size).body()?.meta?.isEnd
+        val isVideoEnd = searchVideo(key, query, sort, page).body()?.meta?.isEnd
+
+        val temp = ArrayList<RstListDto>()
+        if(isImgEnd!=true && isVideoEnd!=true){
+            for(i in resImg.indices){
+                temp.add(RstListDto(resImg[i].thumbnail, resImg[i].datetime))
+                temp.add(RstListDto(resVideo[i].thumbnail, resVideo[i].datetime))
+            }
+        }else if(isImgEnd==true && isVideoEnd!=true){
+            for(i in resImg.indices){
+                temp.add(RstListDto(resImg[i].thumbnail, resImg[i].datetime))
+            }
+        }else if(isImgEnd!=true && isVideoEnd==true){
+            for(i in resImg.indices){
+                temp.add(RstListDto(resVideo[i].thumbnail, resVideo[i].datetime))
+            }
+        }else{
+        }
+
+
+        temp.sortWith(compareByDescending { it.datetime })
+        data.addAll(temp)
+        adapter.notifyDataSetChanged()
+        Log.d(ContentValues.TAG, "onResponse: ㅇㅇㅇㅇㅇ")
     }
 }
