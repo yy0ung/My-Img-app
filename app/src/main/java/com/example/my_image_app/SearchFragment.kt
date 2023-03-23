@@ -50,7 +50,7 @@ class SearchFragment : Fragment() {
         recyclerView.setItemViewCacheSize(20)
         recyclerView.clearAnimation()
         CoroutineScope(Dispatchers.Main).launch {
-            searchRst("연세")
+            searchRst("기현")
         }
 
         binding.searchBtn.setOnClickListener {
@@ -113,7 +113,7 @@ class SearchFragment : Fragment() {
                 val totalItemCount = layoutManager.itemCount
                 val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
                 re.loadNextPage(
-                    key, "연세", "recency", currentPage, 10, data, adapter, viewModel.unallocList, lastSize, totalItemCount)
+                    key, "기현", "recency", currentPage, 10, data, adapter, viewModel.unallocList, lastSize, totalItemCount)
                 isLoading = false
                 // 마지막 페이지 확인
                 if(re.isLastPage){
