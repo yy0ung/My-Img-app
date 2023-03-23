@@ -28,12 +28,12 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
 
     suspend fun searchRst(key : String, query : String, sort : String, page : Int, size : Int){
         viewModelScope.launch {
+            val bool = GlobalApplication.save.getPref("key", "null")
             repository.searchImg(key, query, sort, page, size).let { response ->
                 if (response.isSuccessful && response.body()!=null) {
                     for (i in 0 until response.body()!!.documents.size){
                         imgAndVideo.add(RstListDto(response.body()!!.documents[i].thumbnail, response.body()!!.documents[i].datetime))
                     }
-                    Log.d(TAG, "searchRst: ${response.body()!!.meta.isEnd}")
                 }
             }
             repository.searchVideo(key, query, sort, page).let { response ->
@@ -41,7 +41,6 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
                     for (i in 0 until response.body()!!.documents.size){
                         imgAndVideo.add(RstListDto(response.body()!!.documents[i].thumbnail, response.body()!!.documents[i].datetime))
                     }
-                    Log.d(TAG, "searchRst: ${response.body()!!.meta.isEnd}")
                 }
             }
 

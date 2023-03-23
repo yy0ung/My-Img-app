@@ -18,7 +18,7 @@ class SharedPreferenceUtil(context: Context) {
         var rst = ArrayList<SaveItemDto>()
         val getSp = save.getString(key, default).toString()
         if(getSp!=default){
-            rst = gson.fromJson(getSp, Array<SaveItemDto>::class.java).toList() as ArrayList<SaveItemDto>
+            rst = ArrayList(gson.fromJson(getSp, Array<SaveItemDto>::class.java).toList())
         }
         return rst
     }
