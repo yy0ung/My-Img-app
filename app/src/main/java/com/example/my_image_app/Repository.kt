@@ -35,7 +35,7 @@ class Repository {
         size: Int,
         data : MutableList<RstListDto>,
         adapter : SearchItemAdapter,
-        lastList : ArrayList<RstListDto>){
+        lastList : ArrayList<RstListDto>, lastSize : Int, total : Int){
         // 성공 못했을때 분기처리
         val resImg = searchImg(key, query, sort, page, size).body()?.documents!!
         val resVideo = searchVideo(key, query, sort, page).body()?.documents!!
@@ -65,6 +65,7 @@ class Repository {
 
         temp.sortWith(compareByDescending { it.datetime })
         data.addAll(temp)
+        //adapter.notifyItemRangeChanged(lastSize, total)
         adapter.notifyDataSetChanged()
         Log.d(ContentValues.TAG, "onResponse: ㅇㅇㅇㅇㅇ")
     }

@@ -31,6 +31,7 @@ class SearchFragment : Fragment() {
     private var isLoading = false
     private var isLastPage = false
     private var currentPage = 1
+    private var lastSize = 0
 
     private val key = "KakaoAK 771b6707ddc9077bf7ad7c7ae0a92272"
     override fun onCreateView(
@@ -48,7 +49,7 @@ class SearchFragment : Fragment() {
         recyclerView = binding.searchList
         recyclerView.setItemViewCacheSize(20)
         CoroutineScope(Dispatchers.Main).launch {
-            searchRst("기현")
+            searchRst("연세")
         }
 
         binding.searchBtn.setOnClickListener {
@@ -73,6 +74,11 @@ class SearchFragment : Fragment() {
                 recyclerView.layoutManager = GridLayoutManager(activity, 2, GridLayoutManager.VERTICAL, false)
                 adapter = SearchItemAdapter(requireActivity(), data)
                 recyclerView.adapter = adapter
+                val layoutManager = recyclerView.layoutManager as GridLayoutManager
+                val visibleItemCount = layoutManager.childCount
+                val totalItemCount = layoutManager.itemCount
+                val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+                lastSize = totalItemCount
 
             }
         }
@@ -80,6 +86,7 @@ class SearchFragment : Fragment() {
             @SuppressLint("NotifyDataSetChanged")
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
+
 
                 if (!isLoading && !isLastPage) {
                     if (!recyclerView.canScrollVertically(1)) {
@@ -99,12 +106,19 @@ class SearchFragment : Fragment() {
             val re = Repository()
             isLoading = true
             CoroutineScope(Dispatchers.Main).launch {
-                re.loadNextPage(key, "기현", "recency", currentPage, 10, data, adapter, viewModel.unallocList)
+                val layoutManager = recyclerView.layoutManager as GridLayoutManager
+                val visibleItemCount = layoutManager.childCount
+                val totalItemCount = layoutManager.itemCount
+                val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+                re.loadNextPage(
+                    key, "연세", "recency", currentPage, 10, data, adapter, viewModel.unallocList, lastSize, totalItemCount)
                 isLoading = false
                 // 마지막 페이지 확인
                 if(re.isLastPage){
                     isLastPage = true
                 }
+                recyclerView.setItemViewCacheSize(20)
+
             }
             Log.d(TAG, "loadMoreItems: done")
 
