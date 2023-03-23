@@ -1,9 +1,7 @@
 package com.example.my_image_app
 
 import android.annotation.SuppressLint
-import android.content.ContentValues
 import android.content.ContentValues.TAG
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -11,23 +9,15 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AbsListView.OnScrollListener
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.my_image_app.databinding.FragmentSearchBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
 
 class SearchFragment : Fragment() {
     private var _binding : FragmentSearchBinding? = null
@@ -35,13 +25,12 @@ class SearchFragment : Fragment() {
     private lateinit var viewModel : MainViewModel
     private lateinit var viewModelFactory : MainViewModelFactory
     private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: MyAdapter
-    private var data = mutableListOf<RstListDto>()
+    private lateinit var adapter: SearchItemAdapter
 
+    private var data = mutableListOf<RstListDto>()
     private var isLoading = false
     private var isLastPage = false
     private var currentPage = 1
-    private val PAGE_SIZE = 10
 
     private val key = "KakaoAK 771b6707ddc9077bf7ad7c7ae0a92272"
     override fun onCreateView(
@@ -57,14 +46,14 @@ class SearchFragment : Fragment() {
 
         binding.searchBtn.setColorFilter(android.graphics.Color.parseColor("#F7E34B"))
         recyclerView = binding.searchList
+        recyclerView.setItemViewCacheSize(20)
         CoroutineScope(Dispatchers.Main).launch {
-            searchRst("연세")
+            searchRst("기현")
         }
 
         binding.searchBtn.setOnClickListener {
             Log.d(TAG, "onCreateView: ${data.get(data.size-1).thumbnail}")
         }
-
 
         return view
 
@@ -82,7 +71,7 @@ class SearchFragment : Fragment() {
             viewModel.repositories1.observe(viewLifecycleOwner){
                 data.addAll(it)
                 recyclerView.layoutManager = GridLayoutManager(activity, 2, GridLayoutManager.VERTICAL, false)
-                adapter = MyAdapter(requireActivity(), data)
+                adapter = SearchItemAdapter(requireActivity(), data)
                 recyclerView.adapter = adapter
 
             }
@@ -94,6 +83,7 @@ class SearchFragment : Fragment() {
 
                 if (!isLoading && !isLastPage) {
                     if (!recyclerView.canScrollVertically(1)) {
+                        Toast.makeText(context, "다음 페이지 불러오는 중", Toast.LENGTH_SHORT).show()
                         loadData()
                     }
                 }
@@ -109,14 +99,13 @@ class SearchFragment : Fragment() {
             val re = Repository()
             isLoading = true
             CoroutineScope(Dispatchers.Main).launch {
-                re.loadNextPage(key, "연세", "recency", currentPage, 10, data, adapter)
+                re.loadNextPage(key, "기현", "recency", currentPage, 10, data, adapter, viewModel.unallocList)
                 isLoading = false
                 // 마지막 페이지 확인
-                if(currentPage==3){
+                if(re.isLastPage){
                     isLastPage = true
                 }
             }
-
             Log.d(TAG, "loadMoreItems: done")
 
         },2000)

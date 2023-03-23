@@ -35,6 +35,7 @@ class SaveFragment : Fragment() {
         CoroutineScope(Dispatchers.Main).launch {
             viewModel.getPref("key", "null")
             viewModel.repositories3.observe(viewLifecycleOwner){
+                it.reverse()
                 val adapter = SaveItemAdapter(it)
                 binding.saveList.layoutManager = GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false)
                 binding.saveList.adapter = adapter
