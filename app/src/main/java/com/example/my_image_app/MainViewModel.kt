@@ -32,28 +32,13 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
 
     suspend fun searchRst(key : String, query : String, sort : String, page : Int, size : Int){
         viewModelScope.launch {
-            repository.searchImg(key, query, sort, page, size).let { response ->
-                if (response.isSuccessful && response.body()!=null) {
-                    for (i in 0 until response.body()!!.documents.size){
-                        imgAndVideo.add(RstListDto(response.body()!!.documents[i].thumbnail, response.body()!!.documents[i].datetime))
-                    }
-                    imgLast = response.body()!!.documents[response.body()!!.documents.size-1].datetime
-                }
-            }
-            repository.searchVideo(key, query, sort, page).let { response ->
-                if (response.isSuccessful) {
-                    for (i in 0 until response.body()!!.documents.size){
-                        imgAndVideo.add(RstListDto(response.body()!!.documents[i].thumbnail, response.body()!!.documents[i].datetime))
-                    }
-                    videoLast = response.body()!!.documents[response.body()!!.documents.size-1].datetime
-                }
-            }
+            repository.fetchSearchRst(key, query, sort, page, size, imgAndVideo)
             imgAndVideo.sortWith(compareByDescending{ it.datetime })
 
-            val index = if(imgLast.toString()> videoLast.toString()){
-                imgLast.toString()
+            val index = if(repository.imgLast.toString()> repository.videoLast.toString()){
+                repository.imgLast.toString()
             }else{
-                videoLast.toString()
+                repository.videoLast.toString()
             }
             for(i in 19 downTo 0){
                 if(imgAndVideo[i].datetime==index){
@@ -72,12 +57,24 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
         }
     }
 
+    suspend fun loadNextPage(key : String,
+                     query: String,
+                     sort: String,
+                     page: Int,
+                     size: Int,
+                     data : MutableList<RstListDto>,
+                     adapter : SearchItemAdapter,
+                     lastSize : Int, total : Int){
+        viewModelScope.launch {
+            Log.d(TAG, "loadNextPage: before $unallocList")
+            repository.loadNextPage(key, query, sort, page, size, data, adapter, unallocList, lastSize, total)
+            Log.d(TAG, "loadNextPage: after $unallocList")
+        }
+    }
 
     suspend fun getPref(key : String, default : String){
         viewModelScope.launch {
-            repository.getPref(key, default).let { response->
-                _repositoriesGetPref.postValue(response)
-            }
+            repository.getPref(key, default, _repositoriesGetPref)
         }
     }
 }

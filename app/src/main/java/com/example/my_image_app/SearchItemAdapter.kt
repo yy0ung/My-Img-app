@@ -29,8 +29,6 @@ class SearchItemAdapter(private val context: Context, private val data: List<Rst
         val detail = item.datetime.toString()
         val spList = GlobalApplication.save.getPref("key", "null")
         val bool = spList.contains(SaveItemDto(item.thumbnail))
-
-        Log.d(TAG, "onBindViewHolder: 2222222$bool")
         if(bool){
             holder.saveChecked.setBackgroundResource(R.drawable.full_like)
         }
