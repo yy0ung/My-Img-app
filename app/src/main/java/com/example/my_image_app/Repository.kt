@@ -65,8 +65,8 @@ class Repository {
 
         temp.sortWith(compareByDescending { it.datetime })
         data.addAll(temp)
-        //adapter.notifyItemRangeChanged(lastSize, total)
-        adapter.notifyDataSetChanged()
+        adapter.notifyItemRangeChanged(lastSize, total)
+        //adapter.notifyDataSetChanged()
         Log.d(ContentValues.TAG, "onResponse: ㅇㅇㅇㅇㅇ")
     }
 }

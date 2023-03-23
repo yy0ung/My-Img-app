@@ -48,6 +48,7 @@ class SearchFragment : Fragment() {
         binding.searchBtn.setColorFilter(android.graphics.Color.parseColor("#F7E34B"))
         recyclerView = binding.searchList
         recyclerView.setItemViewCacheSize(20)
+        recyclerView.clearAnimation()
         CoroutineScope(Dispatchers.Main).launch {
             searchRst("연세")
         }
@@ -101,6 +102,7 @@ class SearchFragment : Fragment() {
     @SuppressLint("NotifyDataSetChanged")
     private fun loadData() {
         currentPage++
+        recyclerView.setItemViewCacheSize(20*currentPage)
         val handler = Handler(Looper.getMainLooper())
         handler.postDelayed({
             val re = Repository()
@@ -117,7 +119,7 @@ class SearchFragment : Fragment() {
                 if(re.isLastPage){
                     isLastPage = true
                 }
-                recyclerView.setItemViewCacheSize(20)
+
 
             }
             Log.d(TAG, "loadMoreItems: done")
