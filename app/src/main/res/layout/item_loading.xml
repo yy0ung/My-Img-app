@@ -17,7 +17,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:id="@+id/itemLoading"
         android:gravity="center"
-        android:text="LOADING"
+        android:text="LOADING . . ."
         android:textSize="13sp"
         android:fontFamily="@font/regular"
         android:includeFontPadding="false"
