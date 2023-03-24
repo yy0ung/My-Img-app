@@ -43,7 +43,7 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
                      page: Int,
                      size: Int,
                      data : MutableList<RstListDto>,
-                     adapter : SearchItemAdapter,
+                     adapter : TestAdapter,
                      lastSize : Int, total : Int){
         viewModelScope.launch {
             repository.loadNextPage(key, query, sort, page, size, data, adapter, unallocList, lastSize, total)

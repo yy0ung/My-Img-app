@@ -25,7 +25,7 @@ class SearchFragment : Fragment() {
     private lateinit var viewModel : MainViewModel
     private lateinit var viewModelFactory : MainViewModelFactory
     private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: SearchItemAdapter
+    private lateinit var adapter: TestAdapter
 
     private var data = mutableListOf<RstListDto>()
     private var isLoading = false
@@ -73,12 +73,11 @@ class SearchFragment : Fragment() {
             viewModel.repositories1.observe(viewLifecycleOwner){
                 data.addAll(it)
                 recyclerView.layoutManager = GridLayoutManager(activity, 2, GridLayoutManager.VERTICAL, false)
-                adapter = SearchItemAdapter(requireActivity(), data)
+                adapter = TestAdapter(requireActivity(), data)
                 recyclerView.adapter = adapter
                 val layoutManager = recyclerView.layoutManager as GridLayoutManager
                 val totalItemCount = layoutManager.itemCount
                 lastSize = totalItemCount
-                Log.d(TAG, "searchRst: $lastSize $totalItemCount")
 
             }
         }
@@ -90,7 +89,7 @@ class SearchFragment : Fragment() {
 
                 if (!isLoading && !isLastPage) {
                     if (!recyclerView.canScrollVertically(1)) {
-                        Toast.makeText(context, "다음 페이지 불러오는 중", Toast.LENGTH_SHORT).show()
+                        isLoading = true
                         loadData()
                     }
                 }
@@ -102,14 +101,18 @@ class SearchFragment : Fragment() {
     private fun loadData() {
         currentPage++
         recyclerView.setItemViewCacheSize(20*currentPage)
+        data.add(RstListDto("null", "null"))
+        val layoutManager = recyclerView.layoutManager as GridLayoutManager
+        val totalItemCount = layoutManager.itemCount
+        adapter.notifyItemInserted(totalItemCount-1)
+
+
         val handler = Handler(Looper.getMainLooper())
         handler.postDelayed({
             val re = Repository()
-            isLoading = true
+
             CoroutineScope(Dispatchers.Main).launch {
-                val layoutManager = recyclerView.layoutManager as GridLayoutManager
-                val totalItemCount = layoutManager.itemCount
-                Log.d(TAG, "searchRst: $lastSize $totalItemCount")
+                data.removeAt(totalItemCount-1)
                 viewModel.loadNextPage(key, "연세", "recency", currentPage, 10, data, adapter, totalItemCount, totalItemCount)
             }
             isLoading = false

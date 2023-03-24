@@ -63,12 +63,14 @@ class Repository {
         page: Int,
         size: Int,
         data : MutableList<RstListDto>,
-        adapter : SearchItemAdapter,
+        adapter : TestAdapter,
         lastList : ArrayList<RstListDto>, lastSize : Int, total : Int){
+
 
         val isImgEnd = iRetrofit.searchImg(key, query, sort, page, size).body()?.meta?.isEnd
         val isVideoEnd = iRetrofit.searchVideo(key, query, sort, page).body()?.meta?.isEnd
         val temp = ArrayList<RstListDto>()
+
         temp.addAll(lastList)
 
         if(isImgEnd!=true && isVideoEnd!=true){
