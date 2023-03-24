@@ -26,32 +26,12 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
     private val key = "KakaoAK 771b6707ddc9077bf7ad7c7ae0a92272"
 
 
-    var imgLast : String? = null
-    var videoLast : String? = null
-
-
     suspend fun searchRst(key : String, query : String, sort : String, page : Int, size : Int){
         viewModelScope.launch {
             repository.fetchSearchRst(key, query, sort, page, size, imgAndVideo)
             imgAndVideo.sortWith(compareByDescending{ it.datetime })
 
-            val index = if(repository.imgLast.toString()> repository.videoLast.toString()){
-                repository.imgLast.toString()
-            }else{
-                repository.videoLast.toString()
-            }
-            for(i in 19 downTo 0){
-                if(imgAndVideo[i].datetime==index){
-                    break
-                }else{
-                    unallocList.add(imgAndVideo[i])
-                    imgAndVideo.remove(imgAndVideo[i])
-                }
-            }
-            Log.d(TAG, "searchRst: $index")
-            Log.d(TAG, "searchRst: $imgAndVideo")
-            Log.d(TAG, "searchRst: $unallocList")
-
+            repository.setTimeOrderList(imgAndVideo, unallocList)
             _repositoriesSearchRst.postValue(imgAndVideo)
 
         }
@@ -66,9 +46,7 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
                      adapter : SearchItemAdapter,
                      lastSize : Int, total : Int){
         viewModelScope.launch {
-            Log.d(TAG, "loadNextPage: before $unallocList")
             repository.loadNextPage(key, query, sort, page, size, data, adapter, unallocList, lastSize, total)
-            Log.d(TAG, "loadNextPage: after $unallocList")
         }
     }
 

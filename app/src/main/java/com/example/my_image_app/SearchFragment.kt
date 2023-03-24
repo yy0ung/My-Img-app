@@ -111,12 +111,11 @@ class SearchFragment : Fragment() {
                 val totalItemCount = layoutManager.itemCount
                 Log.d(TAG, "searchRst: $lastSize $totalItemCount")
                 viewModel.loadNextPage(key, "연세", "recency", currentPage, 10, data, adapter, totalItemCount, totalItemCount)
-
-                isLoading = false
-                // 마지막 페이지 확인
-                if(re.isLastPage){
-                    isLastPage = true
-                }
+            }
+            isLoading = false
+            // 마지막 페이지 확인
+            if(re.isLastPage){
+                isLastPage = true
             }
         },2000)
         }
