@@ -10,6 +10,8 @@ import com.example.my_image_app.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding : ActivityMainBinding
+    private var searchFragment : SearchFragment? = null
+    private var saveFragment : SaveFragment? = null
 
     @SuppressLint("MissingInflatedId", "CommitPrefEdits")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,20 +19,24 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val fragment = supportFragmentManager.beginTransaction()
-        fragment.add(R.id.mainFragmentContainer, SearchFragment()).commit()
+        searchFragment = SearchFragment()
+        supportFragmentManager.beginTransaction().replace(R.id.mainFragmentContainer, searchFragment!!).commit()
         binding.mainFragmentSaveIcon.setColorFilter(android.graphics.Color.parseColor("#E3E1E1"))
 
         binding.mainFragmentSearchContainer.setOnClickListener {
             binding.mainFragmentSearchIcon.setColorFilter(android.graphics.Color.parseColor("#FF000000"))
             binding.mainFragmentSaveIcon.setColorFilter(android.graphics.Color.parseColor("#E3E1E1"))
-            supportFragmentManager.beginTransaction().replace(R.id.mainFragmentContainer, SearchFragment()).commit()
+            if(searchFragment!=null) supportFragmentManager.beginTransaction().show(searchFragment!!).commit()
+            if(saveFragment!=null) supportFragmentManager.beginTransaction().hide(saveFragment!!).commit()
         }
 
         binding.mainFragmentSaveContainer.setOnClickListener {
             binding.mainFragmentSearchIcon.setColorFilter(android.graphics.Color.parseColor("#E3E1E1"))
             binding.mainFragmentSaveIcon.setColorFilter(android.graphics.Color.parseColor("#FF000000"))
-            supportFragmentManager.beginTransaction().replace(R.id.mainFragmentContainer, SaveFragment()).commit()
+            if(searchFragment!=null) supportFragmentManager.beginTransaction().hide(searchFragment!!).commit()
+            saveFragment = SaveFragment()
+            supportFragmentManager.beginTransaction().add(R.id.mainFragmentContainer, saveFragment!!).commit()
+
         }
 
     }

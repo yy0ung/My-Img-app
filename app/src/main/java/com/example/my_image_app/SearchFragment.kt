@@ -35,12 +35,8 @@ class SearchFragment : Fragment() {
     private var isLoading = false
     private var isLastPage = false
     private var currentPage = 1
-    private var lastSize = 0
-
 
     private val key = "KakaoAK 771b6707ddc9077bf7ad7c7ae0a92272"
-
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -55,38 +51,25 @@ class SearchFragment : Fragment() {
 
         binding.searchBtn.setColorFilter(android.graphics.Color.parseColor("#F7E34B"))
 
-        recyclerView = binding.searchList
-        
-        recyclerView.clearAnimation()
-        recyclerView.run { GridItemAlign(2, 5) }
-
         val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
 
         binding.searchBtn.setOnClickListener {
             CoroutineScope(Dispatchers.Main).launch {
+                recyclerView = binding.searchList
                 recyclerView.setItemViewCacheSize(20)
+                recyclerView.clearAnimation()
+                recyclerView.run { GridItemAlign(2, 5) }
+
                 searchRst(binding.searchInput.text.toString())
                 imm.hideSoftInputFromWindow(binding.searchBtn.windowToken,0)
             }
         }
-        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            @SuppressLint("NotifyDataSetChanged")
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                if (!isLoading && !isLastPage) {
-                    if (!recyclerView.canScrollVertically(1)) {
-                        isLoading = true
-                        loadData()
-                    }
-                }
-            }
-        })
+
 
         return view
 
     }
-
-
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -106,12 +89,21 @@ class SearchFragment : Fragment() {
                 recyclerView.layoutManager = GridLayoutManager(activity, 2, GridLayoutManager.VERTICAL, false)
                 adapter = SearchItemAdapter(requireActivity(), data)
                 recyclerView.adapter = adapter
-                val layoutManager = recyclerView.layoutManager as GridLayoutManager
-                val totalItemCount = layoutManager.itemCount
-                lastSize = totalItemCount
 
             }
         }
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            @SuppressLint("NotifyDataSetChanged")
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (!isLoading && !isLastPage) {
+                    if (!recyclerView.canScrollVertically(1)) {
+                        isLoading = true
+                        loadData()
+                    }
+                }
+            }
+        })
         
     }
 
@@ -126,10 +118,8 @@ class SearchFragment : Fragment() {
 
             val re = Repository()
 
-            CoroutineScope(Dispatchers.Main).launch {
-
+            CoroutineScope(Dispatchers.IO).launch {
                 viewModel.loadNextPage(key, binding.searchInput.text.toString(), "recency", currentPage, 10, data, adapter, totalItemCount, totalItemCount)
-
             }
             isLoading = false
             // 마지막 페이지 확인
