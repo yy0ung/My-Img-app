@@ -50,7 +50,7 @@ class SearchFragment : Fragment() {
         recyclerView.setItemViewCacheSize(20)
         recyclerView.clearAnimation()
         CoroutineScope(Dispatchers.Main).launch {
-            searchRst("기현")
+            searchRst("연세")
         }
 
         binding.searchBtn.setOnClickListener {
@@ -76,10 +76,9 @@ class SearchFragment : Fragment() {
                 adapter = SearchItemAdapter(requireActivity(), data)
                 recyclerView.adapter = adapter
                 val layoutManager = recyclerView.layoutManager as GridLayoutManager
-                val visibleItemCount = layoutManager.childCount
                 val totalItemCount = layoutManager.itemCount
-                val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
                 lastSize = totalItemCount
+                Log.d(TAG, "searchRst: $lastSize $totalItemCount")
 
             }
         }
@@ -109,25 +108,17 @@ class SearchFragment : Fragment() {
             isLoading = true
             CoroutineScope(Dispatchers.Main).launch {
                 val layoutManager = recyclerView.layoutManager as GridLayoutManager
-                val visibleItemCount = layoutManager.childCount
                 val totalItemCount = layoutManager.itemCount
-                val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
-                re.loadNextPage(
-                    key, "기현", "recency", currentPage, 10, data, adapter, viewModel.unallocList, lastSize, totalItemCount)
-                isLoading = false
-                // 마지막 페이지 확인
-                if(re.isLastPage){
-                    isLastPage = true
-                }
-
-
+                Log.d(TAG, "searchRst: $lastSize $totalItemCount")
+                viewModel.loadNextPage(key, "연세", "recency", currentPage, 10, data, adapter, totalItemCount, totalItemCount)
             }
-            Log.d(TAG, "loadMoreItems: done")
-
+            isLoading = false
+            // 마지막 페이지 확인
+            if(re.isLastPage){
+                isLastPage = true
+            }
         },2000)
-
         }
-
 
     }
 

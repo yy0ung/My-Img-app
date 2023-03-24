@@ -1,9 +1,7 @@
 package com.example.my_image_app
 
 import android.annotation.SuppressLint
-import android.content.ContentValues.TAG
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +11,7 @@ import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.my_image_app.utils.GlobalApplication
 
 class SearchItemAdapter(private val context: Context, private val data: List<RstListDto>) :
     RecyclerView.Adapter<SearchItemAdapter.ViewHolder>() {
@@ -23,14 +22,13 @@ class SearchItemAdapter(private val context: Context, private val data: List<Rst
         return ViewHolder(view)
     }
 
+
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = data[position]
         val detail = item.datetime.toString()
         val spList = GlobalApplication.save.getPref("key", "null")
         val bool = spList.contains(SaveItemDto(item.thumbnail))
-
-        Log.d(TAG, "onBindViewHolder: 2222222$bool")
         if(bool){
             holder.saveChecked.setBackgroundResource(R.drawable.full_like)
         }

@@ -1,7 +1,6 @@
-package com.example.my_image_app
+package com.example.my_image_app.utils
 
 import android.app.Application
-import com.example.my_image_app.utils.SharedPreferenceUtil
 
 class GlobalApplication : Application() {
     companion object {

@@ -26,58 +26,33 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
     private val key = "KakaoAK 771b6707ddc9077bf7ad7c7ae0a92272"
 
 
-    var imgLast : String? = null
-    var videoLast : String? = null
-
-
     suspend fun searchRst(key : String, query : String, sort : String, page : Int, size : Int){
         viewModelScope.launch {
-            repository.searchImg(key, query, sort, page, size).let { response ->
-                if (response.isSuccessful && response.body()!=null) {
-                    for (i in 0 until response.body()!!.documents.size){
-                        imgAndVideo.add(RstListDto(response.body()!!.documents[i].thumbnail, response.body()!!.documents[i].datetime))
-                    }
-                    imgLast = response.body()!!.documents[response.body()!!.documents.size-1].datetime
-                }
-            }
-            repository.searchVideo(key, query, sort, page).let { response ->
-                if (response.isSuccessful) {
-                    for (i in 0 until response.body()!!.documents.size){
-                        imgAndVideo.add(RstListDto(response.body()!!.documents[i].thumbnail, response.body()!!.documents[i].datetime))
-                    }
-                    videoLast = response.body()!!.documents[response.body()!!.documents.size-1].datetime
-                }
-            }
+            repository.fetchSearchRst(key, query, sort, page, size, imgAndVideo)
             imgAndVideo.sortWith(compareByDescending{ it.datetime })
 
-            val index = if(imgLast.toString()> videoLast.toString()){
-                imgLast.toString()
-            }else{
-                videoLast.toString()
-            }
-            for(i in 19 downTo 0){
-                if(imgAndVideo[i].datetime==index){
-                    break
-                }else{
-                    unallocList.add(imgAndVideo[i])
-                    imgAndVideo.remove(imgAndVideo[i])
-                }
-            }
-            Log.d(TAG, "searchRst: $index")
-            Log.d(TAG, "searchRst: $imgAndVideo")
-            Log.d(TAG, "searchRst: $unallocList")
-
+            repository.setTimeOrderList(imgAndVideo, unallocList)
             _repositoriesSearchRst.postValue(imgAndVideo)
 
         }
     }
 
+    suspend fun loadNextPage(key : String,
+                     query: String,
+                     sort: String,
+                     page: Int,
+                     size: Int,
+                     data : MutableList<RstListDto>,
+                     adapter : SearchItemAdapter,
+                     lastSize : Int, total : Int){
+        viewModelScope.launch {
+            repository.loadNextPage(key, query, sort, page, size, data, adapter, unallocList, lastSize, total)
+        }
+    }
 
     suspend fun getPref(key : String, default : String){
         viewModelScope.launch {
-            repository.getPref(key, default).let { response->
-                _repositoriesGetPref.postValue(response)
-            }
+            repository.getPref(key, default, _repositoriesGetPref)
         }
     }
 }
