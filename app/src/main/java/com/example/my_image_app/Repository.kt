@@ -26,7 +26,7 @@ class Repository {
     suspend fun fetchSearchRst(
         key : String, query : String, sort : String, page : Int, size : Int, imgAndVideo : ArrayList<RstListDto>){
         searchImg(key, query, sort, page, size, imgAndVideo)
-        searchVideo(key, query, sort, page, imgAndVideo)
+        searchVideo(key, query, sort, page, size, imgAndVideo)
     }
 
     private suspend fun searchImg(key : String, query : String, sort : String, page : Int, size : Int, imgAndVideo : ArrayList<RstListDto>){
@@ -41,8 +41,8 @@ class Repository {
         }
     }
 
-    private suspend fun searchVideo(key: String, query : String, sort : String, page : Int, imgAndVideo : ArrayList<RstListDto>) {
-        iRetrofit.searchVideo(key, query, sort, page).let { response ->
+    private suspend fun searchVideo(key: String, query : String, sort : String, page : Int, size : Int, imgAndVideo : ArrayList<RstListDto>) {
+        iRetrofit.searchVideo(key, query, sort, page, size).let { response ->
             if (response.isSuccessful) {
                 for (i in 0 until response.body()!!.documents.size){
                     imgAndVideo.add(RstListDto(response.body()!!.documents[i].thumbnail, response.body()!!.documents[i].datetime))
@@ -70,7 +70,7 @@ class Repository {
         lastList : ArrayList<RstListDto>, lastSize : Int, total : Int){
 
         val isImgEnd = iRetrofit.searchImg(key, query, sort, page, size).body()?.meta?.isEnd
-        val isVideoEnd = iRetrofit.searchVideo(key, query, sort, page).body()?.meta?.isEnd
+        val isVideoEnd = iRetrofit.searchVideo(key, query, sort, page, size).body()?.meta?.isEnd
         val temp = ArrayList<RstListDto>()
 
         temp.addAll(lastList)
@@ -78,7 +78,7 @@ class Repository {
         if(isImgEnd!=true && isVideoEnd!=true){
             fetchSearchRst(key, query, sort, page, size, temp)
         }else if(isImgEnd==true && isVideoEnd!=true){
-            searchVideo(key, query, sort, page, temp)
+            searchVideo(key, query, sort, page, size, temp)
         }else if(isImgEnd!=true && isVideoEnd==true){
             searchImg(key, query, sort, page, size, temp)
         }else{
@@ -100,7 +100,7 @@ class Repository {
         val lSize = lastList.size
         lastList.clear()
 
-        for(i in 19+lSize downTo 0){
+        for(i in 59+lSize downTo 0){
             if(arr[i].datetime==index){
                 break
             }else{

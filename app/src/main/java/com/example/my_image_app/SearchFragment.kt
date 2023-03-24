@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
@@ -57,7 +58,7 @@ class SearchFragment : Fragment() {
         binding.searchBtn.setOnClickListener {
             CoroutineScope(Dispatchers.Main).launch {
                 recyclerView = binding.searchList
-                recyclerView.setItemViewCacheSize(20)
+                recyclerView.setItemViewCacheSize(60)
                 recyclerView.clearAnimation()
                 recyclerView.run { GridItemAlign(2, 5) }
 
@@ -81,7 +82,7 @@ class SearchFragment : Fragment() {
         // initialize current page
         currentPage = 1
         CoroutineScope(Dispatchers.Main).launch {
-            viewModel.searchRst(key, word, "recency", currentPage,10)
+            viewModel.searchRst(key, word, "recency", currentPage,30)
             viewModel.repositories1.observe(viewLifecycleOwner){
                 viewModel.unallocList.clear()
                 data.clear()
@@ -98,6 +99,7 @@ class SearchFragment : Fragment() {
                 super.onScrolled(recyclerView, dx, dy)
                 if (!isLoading && !isLastPage) {
                     if (!recyclerView.canScrollVertically(1)) {
+                        Toast.makeText(context, "LOADING . . .", Toast.LENGTH_SHORT).show()
                         isLoading = true
                         loadData()
                     }
@@ -110,7 +112,7 @@ class SearchFragment : Fragment() {
     @SuppressLint("NotifyDataSetChanged")
     private fun loadData() {
         currentPage++
-        recyclerView.setItemViewCacheSize(20*currentPage+1)
+        recyclerView.setItemViewCacheSize(60*(currentPage+1))
         val handler = Handler(Looper.getMainLooper())
         handler.postDelayed({
             val layoutManager = recyclerView.layoutManager as GridLayoutManager
@@ -119,7 +121,7 @@ class SearchFragment : Fragment() {
             val re = Repository()
 
             CoroutineScope(Dispatchers.IO).launch {
-                viewModel.loadNextPage(key, binding.searchInput.text.toString(), "recency", currentPage, 10, data, adapter, totalItemCount, totalItemCount)
+                viewModel.loadNextPage(key, binding.searchInput.text.toString(), "recency", currentPage, 30, data, adapter, totalItemCount, totalItemCount)
             }
             isLoading = false
             // 마지막 페이지 확인

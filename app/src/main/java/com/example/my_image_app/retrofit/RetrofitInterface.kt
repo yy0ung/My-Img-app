@@ -13,7 +13,7 @@ interface RetrofitInterface {
         : Response<RetrofitSearchImgDto>
 
     @GET("/v2/search/vclip")
-    suspend fun searchVideo(@Header("Authorization")key : String, @Query("query") query : String, @Query("sort") sort : String, @Query("page") page : Int)
+    suspend fun searchVideo(@Header("Authorization")key : String, @Query("query") query : String, @Query("sort") sort : String, @Query("page") page : Int, @Query("size") size : Int)
             : Response<RetrofitSearchVideoDto>
 
 }
