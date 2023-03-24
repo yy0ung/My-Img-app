@@ -1,5 +1,7 @@
-package com.example.my_image_app
+package com.example.my_image_app.retrofit
 
+import com.example.my_image_app.retrofit.dto.RetrofitSearchImgDto
+import com.example.my_image_app.retrofit.dto.RetrofitSearchVideoDto
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Header

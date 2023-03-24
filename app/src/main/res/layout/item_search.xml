@@ -35,7 +35,7 @@
         android:textSize="13sp"
         android:fontFamily="@font/regular"
         android:includeFontPadding="false"
-        android:textColor="#989898"/>
+        android:textColor="#FFFFFF"/>
 
 
 

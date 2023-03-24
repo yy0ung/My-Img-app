@@ -1,24 +1,27 @@
 package com.example.my_image_app
 
 import android.annotation.SuppressLint
-import android.content.ContentValues
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.example.my_image_app.retrofit.RetrofitClient
+import com.example.my_image_app.retrofit.RetrofitInterface
+import com.example.my_image_app.retrofit.dto.RstListDto
+import com.example.my_image_app.retrofit.dto.SaveItemDto
 import com.example.my_image_app.utils.API
 import com.example.my_image_app.utils.GlobalApplication
-import retrofit2.Response
+import kotlinx.coroutines.delay
 
 class Repository {
     companion object{
         val instance = Repository()
     }
 
-    private val iRetrofit : RetrofitInterface = RetrofitClient.getClient(API.BASE_URL)!!.create(RetrofitInterface::class.java)
+    private val iRetrofit : RetrofitInterface = RetrofitClient.getClient(API.BASE_URL)!!.create(
+        RetrofitInterface::class.java)
     var isLastPage = false
-    var imgLast : String? = null
-    var videoLast : String? = null
-    var isImageEnd : Boolean? = null
-    var isVideoEnd : Boolean? = null
+    private var imgLast : String? = null
+    private var videoLast : String? = null
+    private var isImageEnd : Boolean? = null
+    private var isVideoEnd : Boolean? = null
 
     suspend fun fetchSearchRst(
         key : String, query : String, sort : String, page : Int, size : Int, imgAndVideo : ArrayList<RstListDto>){
@@ -63,9 +66,8 @@ class Repository {
         page: Int,
         size: Int,
         data : MutableList<RstListDto>,
-        adapter : TestAdapter,
+        adapter : SearchItemAdapter,
         lastList : ArrayList<RstListDto>, lastSize : Int, total : Int){
-
 
         val isImgEnd = iRetrofit.searchImg(key, query, sort, page, size).body()?.meta?.isEnd
         val isVideoEnd = iRetrofit.searchVideo(key, query, sort, page).body()?.meta?.isEnd
@@ -86,7 +88,6 @@ class Repository {
         setTimeOrderList(temp, lastList)
         data.addAll(temp)
         adapter.notifyItemRangeChanged(lastSize, total)
-        //adapter.notifyDataSetChanged()
     }
 
     fun setTimeOrderList(arr : ArrayList<RstListDto>, lastList : ArrayList<RstListDto>){

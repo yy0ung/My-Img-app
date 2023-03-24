@@ -9,14 +9,15 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.my_image_app.databinding.FragmentSearchBinding
+import com.example.my_image_app.retrofit.dto.RstListDto
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class SearchFragment : Fragment() {
@@ -25,13 +26,15 @@ class SearchFragment : Fragment() {
     private lateinit var viewModel : MainViewModel
     private lateinit var viewModelFactory : MainViewModelFactory
     private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: TestAdapter
+    private lateinit var adapter: SearchItemAdapter
+    private lateinit var searchWord : String
 
     private var data = mutableListOf<RstListDto>()
     private var isLoading = false
     private var isLastPage = false
     private var currentPage = 1
     private var lastSize = 0
+
 
     private val key = "KakaoAK 771b6707ddc9077bf7ad7c7ae0a92272"
     override fun onCreateView(
@@ -46,15 +49,15 @@ class SearchFragment : Fragment() {
         viewModel = ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
 
         binding.searchBtn.setColorFilter(android.graphics.Color.parseColor("#F7E34B"))
+
         recyclerView = binding.searchList
         recyclerView.setItemViewCacheSize(20)
         recyclerView.clearAnimation()
-        CoroutineScope(Dispatchers.Main).launch {
-            searchRst("연세")
-        }
 
         binding.searchBtn.setOnClickListener {
-            Log.d(TAG, "onCreateView: ${data.get(data.size-1).thumbnail}")
+            CoroutineScope(Dispatchers.Main).launch {
+                searchRst(binding.searchInput.text.toString())
+            }
         }
 
         return view
@@ -71,9 +74,11 @@ class SearchFragment : Fragment() {
         CoroutineScope(Dispatchers.Main).launch {
             viewModel.searchRst(key, word, "recency", currentPage,10)
             viewModel.repositories1.observe(viewLifecycleOwner){
+                viewModel.unallocList.clear()
+                data.clear()
                 data.addAll(it)
                 recyclerView.layoutManager = GridLayoutManager(activity, 2, GridLayoutManager.VERTICAL, false)
-                adapter = TestAdapter(requireActivity(), data)
+                adapter = SearchItemAdapter(requireActivity(), data)
                 recyclerView.adapter = adapter
                 val layoutManager = recyclerView.layoutManager as GridLayoutManager
                 val totalItemCount = layoutManager.itemCount
@@ -90,6 +95,7 @@ class SearchFragment : Fragment() {
                 if (!isLoading && !isLastPage) {
                     if (!recyclerView.canScrollVertically(1)) {
                         isLoading = true
+
                         loadData()
                     }
                 }
@@ -100,27 +106,25 @@ class SearchFragment : Fragment() {
     @SuppressLint("NotifyDataSetChanged")
     private fun loadData() {
         currentPage++
-        recyclerView.setItemViewCacheSize(20*currentPage)
-        data.add(RstListDto("null", "null"))
-        val layoutManager = recyclerView.layoutManager as GridLayoutManager
-        val totalItemCount = layoutManager.itemCount
-        adapter.notifyItemInserted(totalItemCount-1)
-
-
+        recyclerView.setItemViewCacheSize(20*currentPage+1)
         val handler = Handler(Looper.getMainLooper())
         handler.postDelayed({
+            val layoutManager = recyclerView.layoutManager as GridLayoutManager
+            val totalItemCount = layoutManager.itemCount
+
             val re = Repository()
 
             CoroutineScope(Dispatchers.Main).launch {
-                data.removeAt(totalItemCount-1)
-                viewModel.loadNextPage(key, "연세", "recency", currentPage, 10, data, adapter, totalItemCount, totalItemCount)
+
+                viewModel.loadNextPage(key, binding.searchInput.text.toString(), "recency", currentPage, 10, data, adapter, totalItemCount, totalItemCount)
+
             }
             isLoading = false
             // 마지막 페이지 확인
             if(re.isLastPage){
                 isLastPage = true
             }
-        },2000)
+        },1000)
         }
 
     }

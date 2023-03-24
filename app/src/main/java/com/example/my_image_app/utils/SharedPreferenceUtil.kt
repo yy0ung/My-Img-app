@@ -1,12 +1,9 @@
 package com.example.my_image_app.utils
 
 import android.annotation.SuppressLint
-import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
-import com.example.my_image_app.RstListDto
-import com.example.my_image_app.SaveItemDto
+import com.example.my_image_app.retrofit.dto.SaveItemDto
 import com.google.gson.GsonBuilder
 
 
@@ -31,13 +28,6 @@ class SharedPreferenceUtil(context: Context) {
         save.edit().clear()
         temp.add(SaveItemDto(thumbnail))
         save.edit().putString(key, gson.toJson(temp)).apply()
-    }
-
-    // sp 에 있는 사진인지 확인하기
-    fun checkPref(key: String, thumbnail : String) : Boolean {
-        val curSp = getPref(key, "null")
-        return curSp.contains(SaveItemDto(thumbnail))
-
     }
 
     // sp 에서 선택한 이미지 지우기

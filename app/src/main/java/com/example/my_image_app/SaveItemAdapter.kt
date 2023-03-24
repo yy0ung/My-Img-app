@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+import com.example.my_image_app.retrofit.dto.SaveItemDto
 import com.example.my_image_app.utils.GlideApp
 
 class SaveItemAdapter(private val saveItemList : ArrayList<SaveItemDto>)
@@ -30,6 +30,5 @@ class SaveItemAdapter(private val saveItemList : ArrayList<SaveItemDto>)
     inner class CustomViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView){
         val itemContainer : ConstraintLayout = itemView.findViewById(R.id.itemSaveContainer)
         val itemImg : ImageView = itemView.findViewById(R.id.itemSaveImg)
-        val itemCheck : ImageView = itemView.findViewById(R.id.itemSaveCheck)
     }
 }

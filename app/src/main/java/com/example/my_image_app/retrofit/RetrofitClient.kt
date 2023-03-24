@@ -1,4 +1,4 @@
-package com.example.my_image_app
+package com.example.my_image_app.retrofit
 
 import android.content.ContentValues.TAG
 import android.util.Log
