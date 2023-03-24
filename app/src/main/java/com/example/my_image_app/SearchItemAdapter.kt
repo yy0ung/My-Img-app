@@ -28,7 +28,6 @@ class SearchItemAdapter(private val context: Context, private val data: List<Rst
             val imgContainer : ImageView = itemView.findViewById(R.id.itemSearchImg)
             val datetimeText : TextView = itemView.findViewById(R.id.itemSearchTime)
             val saveChecked : ImageView = itemView.findViewById(R.id.itemSaveCheck)
-            val itemContainer: ConstraintLayout = itemView.findViewById(R.id.itemSearchContainer)
 
             val spList = GlobalApplication.save.getPref("key", "null")
             val bool = spList.contains(SaveItemDto(item.thumbnail))
@@ -46,17 +45,7 @@ class SearchItemAdapter(private val context: Context, private val data: List<Rst
                 .into(imgContainer)
 
 
-            itemContainer.setOnClickListener {
-                if(bool){
-                    GlobalApplication.save.removePref("key", item.thumbnail)
-                    Toast.makeText(context, "보관함에서 삭제되었습니다.", Toast.LENGTH_SHORT).show()
-                    saveChecked.setBackgroundResource(R.drawable.empty_like)
-                }else{
-                    GlobalApplication.save.setPref("key", item.thumbnail)
-                    Toast.makeText(context, "보관함에 추가되었습니다.", Toast.LENGTH_SHORT).show()
-                    saveChecked.setBackgroundResource(R.drawable.full_like)
-                }
-            }
+
         }
     }
 
@@ -87,7 +76,22 @@ class SearchItemAdapter(private val context: Context, private val data: List<Rst
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         if (holder is ItemViewHolder) {
             holder.bindItems(data[position])
+
+            holder.itemView.findViewById<ConstraintLayout>(R.id.itemSearchContainer).setOnClickListener {
+                val spList = GlobalApplication.save.getPref("key", "null")
+                val bool = spList.contains(SaveItemDto(data[position].thumbnail))
+                if(bool){
+                    GlobalApplication.save.removePref("key", data[position].thumbnail)
+                    Toast.makeText(context, "보관함에서 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                    holder.itemView.findViewById<ImageView>(R.id.itemSaveCheck).setBackgroundResource(R.drawable.empty_like)
+                }else{
+                    GlobalApplication.save.setPref("key", data[position].thumbnail)
+                    Toast.makeText(context, "보관함에 추가되었습니다.", Toast.LENGTH_SHORT).show()
+                    holder.itemView.findViewById<ImageView>(R.id.itemSaveCheck).setBackgroundResource(R.drawable.full_like)
+                }
+            }
         }
+
     }
 
     override fun getItemCount(): Int {

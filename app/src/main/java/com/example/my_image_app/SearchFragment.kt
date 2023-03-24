@@ -2,6 +2,7 @@ package com.example.my_image_app
 
 import android.annotation.SuppressLint
 import android.content.ContentValues.TAG
+import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -9,7 +10,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -27,7 +30,6 @@ class SearchFragment : Fragment() {
     private lateinit var viewModelFactory : MainViewModelFactory
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: SearchItemAdapter
-    private lateinit var searchWord : String
 
     private var data = mutableListOf<RstListDto>()
     private var isLoading = false
@@ -37,6 +39,9 @@ class SearchFragment : Fragment() {
 
 
     private val key = "KakaoAK 771b6707ddc9077bf7ad7c7ae0a92272"
+
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -51,23 +56,44 @@ class SearchFragment : Fragment() {
         binding.searchBtn.setColorFilter(android.graphics.Color.parseColor("#F7E34B"))
 
         recyclerView = binding.searchList
-        recyclerView.setItemViewCacheSize(20)
+        
         recyclerView.clearAnimation()
+        recyclerView.run { GridItemAlign(2, 5) }
+
+        val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
         binding.searchBtn.setOnClickListener {
             CoroutineScope(Dispatchers.Main).launch {
+                recyclerView.setItemViewCacheSize(20)
                 searchRst(binding.searchInput.text.toString())
+                imm.hideSoftInputFromWindow(binding.searchBtn.windowToken,0)
             }
         }
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            @SuppressLint("NotifyDataSetChanged")
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (!isLoading && !isLastPage) {
+                    if (!recyclerView.canScrollVertically(1)) {
+                        isLoading = true
+                        loadData()
+                    }
+                }
+            }
+        })
 
         return view
 
     }
 
+
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
+
+
     private suspend fun searchRst(word : String){
         // initialize current page
         currentPage = 1
@@ -86,21 +112,7 @@ class SearchFragment : Fragment() {
 
             }
         }
-        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            @SuppressLint("NotifyDataSetChanged")
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-
-
-                if (!isLoading && !isLastPage) {
-                    if (!recyclerView.canScrollVertically(1)) {
-                        isLoading = true
-
-                        loadData()
-                    }
-                }
-            }
-        })
+        
     }
 
     @SuppressLint("NotifyDataSetChanged")

@@ -31,6 +31,7 @@ class SaveFragment : Fragment() {
 
         viewModelFactory = MainViewModelFactory(Repository())
         viewModel = ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
+        binding.saveList.run { GridItemAlign(2, 5) }
 
         CoroutineScope(Dispatchers.Main).launch {
             viewModel.getPref("key", "null")
