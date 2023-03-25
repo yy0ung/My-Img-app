@@ -1,4 +1,4 @@
-package com.example.my_image_app
+package com.example.my_image_app.utils
 
 import android.graphics.Rect
 import android.view.View
@@ -12,7 +12,7 @@ class GridItemAlign(private val spanCnt : Int, private val space : Int) : Recycl
         state: RecyclerView.State
     ) {
         val position = parent.getChildAdapterPosition(view)
-        val column = position % spanCnt + 1      // 1부터 시작
+        val column = position % spanCnt + 1
 
         if (position < spanCnt){
             outRect.top = space

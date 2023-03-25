@@ -9,11 +9,19 @@ import retrofit2.http.Query
 
 interface RetrofitInterface {
     @GET("/v2/search/image")
-    suspend fun searchImg(@Header("Authorization")key : String, @Query("query") query : String, @Query("sort") sort : String, @Query("page") page : Int, @Query("size") size : Int)
-        : Response<RetrofitSearchImgDto>
+    suspend fun searchImg(
+        @Header("Authorization")key : String,
+        @Query("query") query : String,
+        @Query("sort") sort : String,
+        @Query("page") page : Int,
+        @Query("size") size : Int) : Response<RetrofitSearchImgDto>
 
     @GET("/v2/search/vclip")
-    suspend fun searchVideo(@Header("Authorization")key : String, @Query("query") query : String, @Query("sort") sort : String, @Query("page") page : Int, @Query("size") size : Int)
-            : Response<RetrofitSearchVideoDto>
+    suspend fun searchVideo(
+        @Header("Authorization")key : String,
+        @Query("query") query : String,
+        @Query("sort") sort : String,
+        @Query("page") page : Int,
+        @Query("size") size : Int) : Response<RetrofitSearchVideoDto>
 
 }

@@ -1,15 +1,17 @@
-package com.example.my_image_app
+package com.example.my_image_app.save
 
-import android.content.ContentValues.TAG
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
+import com.example.my_image_app.MainViewModel
+import com.example.my_image_app.MainViewModelFactory
+import com.example.my_image_app.Repository
 import com.example.my_image_app.databinding.FragmentSaveBinding
+import com.example.my_image_app.utils.GridItemAlign
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -24,10 +26,9 @@ class SaveFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentSaveBinding.inflate(layoutInflater)
         val view = binding.root
-
 
         viewModelFactory = MainViewModelFactory(Repository())
         viewModel = ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
@@ -35,7 +36,7 @@ class SaveFragment : Fragment() {
 
         CoroutineScope(Dispatchers.Main).launch {
             viewModel.getPref("key", "null")
-            viewModel.repositories3.observe(viewLifecycleOwner){
+            viewModel.repositories2.observe(viewLifecycleOwner){
                 it.reverse()
                 val adapter = SaveItemAdapter(it)
                 binding.saveList.layoutManager = GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false)

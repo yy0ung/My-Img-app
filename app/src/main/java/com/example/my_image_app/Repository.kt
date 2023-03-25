@@ -6,107 +6,123 @@ import com.example.my_image_app.retrofit.RetrofitClient
 import com.example.my_image_app.retrofit.RetrofitInterface
 import com.example.my_image_app.retrofit.dto.RstListDto
 import com.example.my_image_app.retrofit.dto.SaveItemDto
+import com.example.my_image_app.search.SearchItemAdapter
 import com.example.my_image_app.utils.API
 import com.example.my_image_app.utils.GlobalApplication
-import kotlinx.coroutines.delay
 
 class Repository {
     companion object{
         val instance = Repository()
     }
 
-    private val iRetrofit : RetrofitInterface = RetrofitClient.getClient(API.BASE_URL)!!.create(
-        RetrofitInterface::class.java)
+    private val iRetrofit : RetrofitInterface =
+        RetrofitClient.getClient(API.BASE_URL)!!.create(RetrofitInterface::class.java)
     var isLastPage = false
     private var imgLast : String? = null
     private var videoLast : String? = null
-    private var isImageEnd : Boolean? = null
-    private var isVideoEnd : Boolean? = null
+    private var isImagePageEnd : Boolean? = null
+    private var isVideoPageEnd : Boolean? = null
 
-    suspend fun fetchSearchRst(
-        key : String, query : String, sort : String, page : Int, size : Int, imgAndVideo : ArrayList<RstListDto>){
+    suspend fun fetchSearchRst(key : String,
+                               query : String,
+                               sort : String,
+                               page : Int,
+                               size : Int,
+                               imgAndVideo : ArrayList<RstListDto>){
         searchImg(key, query, sort, page, size, imgAndVideo)
         searchVideo(key, query, sort, page, size, imgAndVideo)
     }
 
-    private suspend fun searchImg(key : String, query : String, sort : String, page : Int, size : Int, imgAndVideo : ArrayList<RstListDto>){
+    private suspend fun searchImg(key : String,
+                                  query : String,
+                                  sort : String,
+                                  page : Int,
+                                  size : Int,
+                                  imgAndVideo : ArrayList<RstListDto>){
         iRetrofit.searchImg(key, query, sort, page, size).let { response ->
             if (response.isSuccessful && response.body()!=null) {
                 for (i in 0 until response.body()!!.documents.size){
                     imgAndVideo.add(RstListDto(response.body()!!.documents[i].thumbnail, response.body()!!.documents[i].datetime))
                 }
                 imgLast = response.body()!!.documents[response.body()!!.documents.size-1].datetime
-                isImageEnd = response.body()!!.meta.isEnd
+                isImagePageEnd = response.body()!!.meta.isEnd
             }
         }
     }
 
-    private suspend fun searchVideo(key: String, query : String, sort : String, page : Int, size : Int, imgAndVideo : ArrayList<RstListDto>) {
+    private suspend fun searchVideo(key: String,
+                                    query : String,
+                                    sort : String,
+                                    page : Int,
+                                    size : Int,
+                                    imgAndVideo : ArrayList<RstListDto>) {
         iRetrofit.searchVideo(key, query, sort, page, size).let { response ->
             if (response.isSuccessful) {
                 for (i in 0 until response.body()!!.documents.size){
                     imgAndVideo.add(RstListDto(response.body()!!.documents[i].thumbnail, response.body()!!.documents[i].datetime))
                 }
                 videoLast = response.body()!!.documents[response.body()!!.documents.size-1].datetime
-                isVideoEnd = response.body()!!.meta.isEnd
+                isVideoPageEnd = response.body()!!.meta.isEnd
             }
         }
     }
 
-    suspend fun getPref(key : String, default : String, list : MutableLiveData<ArrayList<SaveItemDto>>){
-        val saveList = GlobalApplication.save.getPref(key, default)
-        list.postValue(saveList)
-    }
-
     @SuppressLint("NotifyDataSetChanged")
-    suspend fun loadNextPage(
-        key : String,
-        query: String,
-        sort: String,
-        page: Int,
-        size: Int,
-        data : MutableList<RstListDto>,
-        adapter : SearchItemAdapter,
-        lastList : ArrayList<RstListDto>, lastSize : Int, total : Int){
+    suspend fun loadNextPage(key : String,
+                             query: String,
+                             sort: String,
+                             page: Int,
+                             size: Int,
+                             data : MutableList<RstListDto>,
+                             adapter : SearchItemAdapter,
+                             remainList : ArrayList<RstListDto>,
+                             lastSize : Int,
+                             total : Int){
 
         val isImgEnd = iRetrofit.searchImg(key, query, sort, page, size).body()?.meta?.isEnd
         val isVideoEnd = iRetrofit.searchVideo(key, query, sort, page, size).body()?.meta?.isEnd
-        val temp = ArrayList<RstListDto>()
+        val tempList = ArrayList<RstListDto>()
 
-        temp.addAll(lastList)
+        tempList.addAll(remainList)
 
         if(isImgEnd!=true && isVideoEnd!=true){
-            fetchSearchRst(key, query, sort, page, size, temp)
+            fetchSearchRst(key, query, sort, page, size, tempList)
         }else if(isImgEnd==true && isVideoEnd!=true){
-            searchVideo(key, query, sort, page, size, temp)
+            searchVideo(key, query, sort, page, size, tempList)
         }else if(isImgEnd!=true && isVideoEnd==true){
-            searchImg(key, query, sort, page, size, temp)
+            searchImg(key, query, sort, page, size, tempList)
         }else{
             isLastPage = true
         }
 
-        setTimeOrderList(temp, lastList)
-        data.addAll(temp)
+        setTimeOrderList(tempList, remainList, size)
+        data.addAll(tempList)
         adapter.notifyItemRangeChanged(lastSize, total)
     }
 
-    fun setTimeOrderList(arr : ArrayList<RstListDto>, lastList : ArrayList<RstListDto>){
+    fun setTimeOrderList(originalList : ArrayList<RstListDto>, remainList : ArrayList<RstListDto>, size : Int) : ArrayList<RstListDto>{
         val index = if(imgLast.toString()> videoLast.toString()){
             imgLast.toString()
         }else{
             videoLast.toString()
         }
-        arr.sortWith(compareByDescending { it.datetime })
-        val lSize = lastList.size
-        lastList.clear()
+        originalList.sortWith(compareByDescending { it.datetime })
+        val lSize = remainList.size
+        remainList.clear()
 
-        for(i in 59+lSize downTo 0){
-            if(arr[i].datetime==index){
+        for(i in (size*2)+lSize-1 downTo 0){
+            if(originalList[i].datetime==index){
                 break
             }else{
-                lastList.add(arr[i])
-                arr.remove(arr[i])
+                remainList.add(originalList[i])
+                originalList.remove(originalList[i])
             }
         }
+        return originalList
+    }
+
+    fun getPref(key : String, default : String, list : MutableLiveData<ArrayList<SaveItemDto>>){
+        val saveList = GlobalApplication.save.getPref(key, default)
+        list.postValue(saveList)
     }
 }
