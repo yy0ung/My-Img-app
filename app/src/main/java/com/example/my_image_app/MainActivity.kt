@@ -25,6 +25,8 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction().replace(R.id.mainFragmentContainer, searchFragment!!).commit()
         binding.mainFragmentSaveIcon.setColorFilter(android.graphics.Color.parseColor("#E3E1E1"))
 
+        // SearchFragment 의 상태를 유지하기 위해 탭을 바꿀 때마다 새로 생성하지 않고 hide 를 사용.
+
         binding.mainFragmentSearchContainer.setOnClickListener {
             binding.mainFragmentSearchIcon.setColorFilter(android.graphics.Color.parseColor("#FF000000"))
             binding.mainFragmentSaveIcon.setColorFilter(android.graphics.Color.parseColor("#E3E1E1"))

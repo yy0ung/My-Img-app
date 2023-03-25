@@ -55,7 +55,6 @@ class SearchFragment : Fragment() {
 
         binding.searchBtn.setColorFilter(android.graphics.Color.parseColor("#F7E34B"))
 
-
         binding.searchBtn.setOnClickListener {
             if(binding.searchInput.text.toString().isEmpty()){
                 Toast.makeText(context, "검색어를 입력하세요", Toast.LENGTH_SHORT).show()
@@ -81,7 +80,7 @@ class SearchFragment : Fragment() {
 
 
     private suspend fun searchRst(word : String){
-        // initialize current page
+        // search 할 때마다 currentPage 초기화
         currentPage = 1
         CoroutineScope(Dispatchers.Main).launch {
             viewModel.searchRst(apiKey, word, "recency", currentPage, queryItemSize)
@@ -114,6 +113,7 @@ class SearchFragment : Fragment() {
     private fun loadData() {
         currentPage++
         recyclerView.setItemViewCacheSize((queryItemSize*2)*(currentPage+1))
+
         val handler = Handler(Looper.getMainLooper())
         handler.postDelayed({
             val layoutManager = recyclerView.layoutManager as GridLayoutManager
@@ -125,7 +125,7 @@ class SearchFragment : Fragment() {
             }
 
             isLoading = false
-            // 마지막 페이지 확인
+            // 마지막 페이지인지 확인
             if(repository.isLastPage){
                 isLastPage = true
             }

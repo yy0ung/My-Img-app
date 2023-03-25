@@ -46,6 +46,7 @@ class SearchItemAdapter(private val context: Context, private val data: List<Rst
 
 
         holder.itemContainer.setOnClickListener {
+            // 사진 선택할 때마다 SharedPreference에 저장되어있는 사진인지 확인하고 보관함에서 추가/삭제
             spList = GlobalApplication.save.getPref("key", "null")
             bool = spList.contains(SaveItemDto(item.thumbnail))
             if(bool){

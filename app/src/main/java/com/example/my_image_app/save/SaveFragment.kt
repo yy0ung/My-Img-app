@@ -37,7 +37,7 @@ class SaveFragment : Fragment() {
         CoroutineScope(Dispatchers.Main).launch {
             viewModel.getPref("key", "null")
             viewModel.repositories2.observe(viewLifecycleOwner){
-                it.reverse()
+                // 보관한 순서대로 (처음 저장한 사진부터) 나타내기
                 val adapter = SaveItemAdapter(it)
                 binding.saveList.layoutManager = GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false)
                 binding.saveList.adapter = adapter
@@ -45,5 +45,10 @@ class SaveFragment : Fragment() {
         }
 
         return view
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

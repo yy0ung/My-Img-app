@@ -18,7 +18,9 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
     val repositories2 : MutableLiveData<ArrayList<SaveItemDto>>
         get() = _repositoriesGetPref
 
+    // 최신순으로 정렬하기 위해, search 한 image 와 video 를 합쳐서 저장하는 list
     private var imgAndVideo = ArrayList<RstListDto>()
+    // 이전 search 결과 page 에서 최신순으로 정렬되지 못해 남은 item 의 list
     val remainList = ArrayList<RstListDto>()
 
 

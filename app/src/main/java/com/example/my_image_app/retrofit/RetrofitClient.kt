@@ -12,9 +12,9 @@ object RetrofitClient {
 
     fun getClient(baseUrl : String) : Retrofit? {
         val client = OkHttpClient.Builder()
+        // 통신과정을 로그 찍어서 확인
         val loggingInterceptor = HttpLoggingInterceptor { message ->
-            Log.d(TAG, "log: $message"
-            )
+            //Log.d(TAG, "log: $message")
         }
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
         client.addInterceptor(loggingInterceptor)

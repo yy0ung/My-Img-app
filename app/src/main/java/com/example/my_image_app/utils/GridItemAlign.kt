@@ -4,6 +4,7 @@ import android.graphics.Rect
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 
+// recyclerview item 정렬
 class GridItemAlign(private val spanCnt : Int, private val space : Int) : RecyclerView.ItemDecoration() {
     override fun getItemOffsets(
         outRect: Rect,

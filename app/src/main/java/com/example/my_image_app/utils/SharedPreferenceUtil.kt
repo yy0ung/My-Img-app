@@ -24,13 +24,13 @@ class SharedPreferenceUtil(context: Context) {
     fun setPref(key : String, thumbnail : String){
         // 원래 배열 가져오기
         val temp = getPref(key, "null")
-        // 원래 sp 초기화
+        // 원래 SharedPreference 초기화
         save.edit().clear()
         temp.add(SaveItemDto(thumbnail))
         save.edit().putString(key, gson.toJson(temp)).apply()
     }
 
-    // sp 에서 선택한 이미지 지우기
+    // SharedPreference 에서 선택한 이미지 지우기
     fun removePref(key: String, thumbnail : String){
         val curSp = getPref(key, "null")
         curSp.remove(SaveItemDto(thumbnail))
